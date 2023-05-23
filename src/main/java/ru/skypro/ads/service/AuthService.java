@@ -1,7 +1,7 @@
-package com.example.adsonlinebackend.service;
+package ru.skypro.ads.service;
 
-import com.example.adsonlinebackend.dto.RegisterReq;
-import com.example.adsonlinebackend.dto.Role;
+import ru.skypro.ads.dto.RegisterReq;
+import ru.skypro.ads.dto.Role;
 
 public interface AuthService {
     boolean login(String userName, String password);

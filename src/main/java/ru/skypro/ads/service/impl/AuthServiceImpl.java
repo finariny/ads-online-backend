@@ -1,13 +1,13 @@
-package com.example.adsonlinebackend.service.impl;
+package ru.skypro.ads.service.impl;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import com.example.adsonlinebackend.dto.RegisterReq;
-import com.example.adsonlinebackend.dto.Role;
-import com.example.adsonlinebackend.service.AuthService;
+import ru.skypro.ads.dto.RegisterReq;
+import ru.skypro.ads.dto.Role;
+import ru.skypro.ads.service.AuthService;
 
 @Service
 public class AuthServiceImpl implements AuthService {

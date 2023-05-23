@@ -1,4 +1,4 @@
-package com.example.adsonlinebackend;
+package ru.skypro.ads;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -44,9 +44,9 @@ public class WebSecurityConfig {
             (authorization) ->
                 authorization
                     .mvcMatchers(AUTH_WHITELIST)
-                    .permitAll()
-                    .mvcMatchers("/ads/**", "/users/**")
-                    .authenticated())
+                    .permitAll())
+//                    .mvcMatchers("/ads/**", "/users/**")
+//                    .authenticated())
         .cors()
         .disable()
         .httpBasic(withDefaults());

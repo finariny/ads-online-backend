@@ -1,4 +1,4 @@
-package com.example.adsonlinebackend.controller;
+package ru.skypro.ads.controller;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;

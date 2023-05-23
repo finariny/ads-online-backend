@@ -1,4 +1,4 @@
-package com.example.adsonlinebackend.dto;
+package ru.skypro.ads.dto;
 
 import lombok.Data;
 

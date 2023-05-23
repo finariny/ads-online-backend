@@ -1,4 +1,4 @@
-package com.example.adsonlinebackend.controller;
+package ru.skypro.ads.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.adsonlinebackend.dto.LoginReq;
-import com.example.adsonlinebackend.dto.RegisterReq;
-import com.example.adsonlinebackend.dto.Role;
-import com.example.adsonlinebackend.service.AuthService;
+import ru.skypro.ads.dto.LoginReq;
+import ru.skypro.ads.dto.RegisterReq;
+import ru.skypro.ads.dto.Role;
+import ru.skypro.ads.service.AuthService;
 
-import static com.example.adsonlinebackend.dto.Role.USER;
+import static ru.skypro.ads.dto.Role.USER;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
