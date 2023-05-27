@@ -32,7 +32,7 @@ public class CommentListServiceImpl implements CommentListService {
     }
 
     @Override
-    public Comment patchComment(Integer adId, Integer commentId, Comment comment) {
+    public Comment updateComment(Integer adId, Integer commentId, Comment comment) {
         return null;
     }
 }
