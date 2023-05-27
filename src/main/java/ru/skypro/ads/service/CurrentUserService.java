@@ -5,6 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.UserReq;
 import ru.skypro.ads.dto.UserResp;
 
+import java.util.Optional;
+
 public interface CurrentUserService {
 
     /**
@@ -19,9 +21,9 @@ public interface CurrentUserService {
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return {@link UserResp}
+     * @return Объект-контейнер сущности {@link UserResp}
      */
-    UserResp getInfo();
+    Optional<UserResp> getUser();
 
     /**
      * Изменение информации об зарегистрированном пользователе

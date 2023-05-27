@@ -1,11 +1,36 @@
 package ru.skypro.ads.service.impl;
 
+import com.sun.istack.NotNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.UserReq;
 import ru.skypro.ads.dto.UserResp;
 import ru.skypro.ads.service.CurrentUserService;
 
+import java.util.Optional;
+
+@Service
 public class CurrentUserServiceImpl implements CurrentUserService {
+
+    private UserResp userResp;
+    private String currentPassword;
+
+    @Value("${app.min.passwd.length}")
+    private int minPasswdLength;
+
+    {
+        userResp = new UserResp();
+        userResp.setId(10001);
+        userResp.setEmail("user@email.local");
+        userResp.setPhone("+79123456780");
+        userResp.setImage("image_d5fv6d9fvdfv");
+        userResp.setLastName("Толстой");
+        userResp.setFirstName("Лев");
+
+        currentPassword = "password";
+
+    }
 
     /**
      * Изменение пароля зарегистрированного пользователя
@@ -15,8 +40,13 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      * @return <code>true</code> если пароль изменен, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean setPassword(String currentPassword, String newPassword) {
-        // TODO: 24.05.2023  
+    public boolean setPassword(@NotNull String currentPassword, @NotNull String newPassword) {
+        // TODO: 24.05.2023
+
+        if (this.currentPassword.equals(currentPassword) && newPassword.length() > minPasswdLength) {
+            this.currentPassword = newPassword;
+            return true;
+        }
         return false;
     }
 
@@ -26,9 +56,9 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      * @return {@link UserResp}
      */
     @Override
-    public UserResp getInfo() {
-        // TODO: 24.05.2023  
-        return null;
+    public Optional<UserResp> getUser() {
+        // TODO: 24.05.2023
+        return Optional.of(this.userResp);
     }
 
     /**
@@ -39,8 +69,9 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public UserResp updateInfo(UserReq userRequest) {
-        // TODO: 24.05.2023  
-        return null;
+        // TODO: 24.05.2023
+//        this.userResp;
+        return this.userResp;
     }
 
     /**
@@ -51,7 +82,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public boolean importImage(MultipartFile image) {
-        // TODO: 24.05.2023  
+        // TODO: 24.05.2023
         return false;
     }
 }
