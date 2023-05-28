@@ -5,31 +5,31 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.AdsDto;
-import ru.skypro.ads.dto.ResponseWrapperAdsDto;
+import ru.skypro.ads.dto.Ads;
+import ru.skypro.ads.dto.CreateAds;
+import ru.skypro.ads.dto.ResponseWrapperAds;
 import ru.skypro.ads.service.AdsService;
 
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.xml.crypto.OctetStreamData;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ads")
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = "http://localhost:8080")
 public class AdsController {
-
-    // TODO: 23.05.2023 see openapi.yaml
 
     private final AdsService adsService;
 
@@ -38,27 +38,28 @@ public class AdsController {
                     @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     array = @ArraySchema(schema = @Schema(
-                                            implementation = ResponseWrapperAdsDto.class)))),
+                                            implementation = ResponseWrapperAds.class)))),
             })
     @GetMapping()
-    public ResponseEntity<ResponseWrapperAdsDto> getAllAds() {
-        ResponseWrapperAdsDto ads = new ResponseWrapperAdsDto(adsService.getAllAds());
+    public ResponseEntity<ResponseWrapperAds> getAllAds() {
+        ResponseWrapperAds ads = new ResponseWrapperAds();
         return ResponseEntity.ok(ads);
     }
+
     @Operation(
             summary = "Добавить объявление",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(
-                                    implementation = ResponseWrapperAdsDto.class)))),
+                                    array = @ArraySchema(schema = @Schema(
+                                            implementation = ResponseWrapperAds.class)))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
     @PostMapping()
-    public ResponseEntity<AdsDto> addAds(@NotNull Authentication authentication,
-                                         @RequestPart("properties") @Valid @javax.validation.constraints.NotNull @NotBlank Object properties,
-                                         @RequestPart("image") @Valid @javax.validation.constraints.NotNull @NotBlank MultipartFile image
+    public ResponseEntity<Ads> addAd(@NotNull Authentication authentication,
+                                     @RequestPart("properties") @Valid @NotNull @NotBlank Object properties,
+                                     @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
     ) {
         return ResponseEntity.ok(adsService.save(properties, authentication.getName(), image));
     }
@@ -66,18 +67,52 @@ public class AdsController {
     @Operation(
             summary = "Получить информацию об объявлении",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Ok",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     array = @ArraySchema(schema = @Schema(
-                                            implementation = ResponseWrapperAdsDto.class)))),
+                                            implementation = ResponseWrapperAds.class)))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<AdsDto> addAds( @PathVariable("id") Integer id) {
-        return ResponseEntity.ok(adsService.getAds(id));
+    public ResponseEntity<Ads> getAd(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(adsService.getAd(id));
     }
 
+    @DeleteMapping("{id}")
+    @Operation(summary = "Удалить объявление")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    public ResponseEntity<Void> deleteAd(@PathVariable int id) {
+        if (id <= 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (adsService.deleteAd(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
-
+    @PatchMapping("{id}")
+    @Operation(summary = "Обновить информацию об объявлении")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = Ads.class)))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    public ResponseEntity<Ads> updateAd(@PathVariable int id, @RequestBody CreateAds createAds) {
+        if (id <= 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (adsService.updateAd(id, createAds)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
