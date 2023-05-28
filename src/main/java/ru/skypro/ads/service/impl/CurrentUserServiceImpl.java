@@ -1,11 +1,34 @@
 package ru.skypro.ads.service.impl;
 
+import com.sun.istack.NotNull;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.UserReq;
-import ru.skypro.ads.dto.UserResp;
+import ru.skypro.ads.dto.User;
 import ru.skypro.ads.service.CurrentUserService;
 
+import java.util.Optional;
+
+@Service
 public class CurrentUserServiceImpl implements CurrentUserService {
+
+    private User user;
+    private String currentPassword;
+
+    @Value("${app.min.passwd.length}")
+    private int minPasswdLength;
+
+    {
+        user = new User();
+        user.setId(10001);
+        user.setEmail("user@email.local");
+        user.setPhone("+79123456780");
+        user.setImage("image_d5fv6d9fvdfv");
+        user.setLastName("Толстой");
+        user.setFirstName("Лев");
+
+        currentPassword = "password";
+    }
 
     /**
      * Изменение пароля зарегистрированного пользователя
@@ -15,32 +38,38 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      * @return <code>true</code> если пароль изменен, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean setPassword(String currentPassword, String newPassword) {
-        // TODO: 24.05.2023  
+    public boolean setPassword(@NotNull String currentPassword, @NotNull String newPassword) {
+        // TODO: 24.05.2023
+
+        if (this.currentPassword.equals(currentPassword) && newPassword.length() > minPasswdLength) {
+            this.currentPassword = newPassword;
+            return true;
+        }
         return false;
     }
 
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return {@link UserResp}
+     * @return {@link User}
      */
     @Override
-    public UserResp getInfo() {
-        // TODO: 24.05.2023  
-        return null;
+    public Optional<User> getUser() {
+        // TODO: 24.05.2023
+        return Optional.of(this.user);
     }
 
     /**
      * Изменение информации об зарегистрированном пользователе
      *
-     * @param userRequest новая информация об пользователе
-     * @return {@link UserResp} обновленные данные, в случае успешного изменения
+     * @param user новая информация об пользователе
+     * @return {@link User} обновленные данные, в случае успешного изменения
      */
     @Override
-    public UserResp updateInfo(UserReq userRequest) {
-        // TODO: 24.05.2023  
-        return null;
+    public Optional<User> updateUser(User user) {
+        // TODO: 24.05.2023
+        this.user = user;
+        return Optional.of(this.user);
     }
 
     /**
@@ -50,8 +79,8 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean importImage(MultipartFile image) {
-        // TODO: 24.05.2023  
+    public boolean updateUserImage(MultipartFile image) {
+        // TODO: 24.05.2023
         return false;
     }
 }

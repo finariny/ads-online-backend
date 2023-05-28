@@ -2,8 +2,9 @@ package ru.skypro.ads.service;
 
 import com.sun.istack.NotNull;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.UserReq;
-import ru.skypro.ads.dto.UserResp;
+import ru.skypro.ads.dto.User;
+
+import java.util.Optional;
 
 public interface CurrentUserService {
 
@@ -19,17 +20,17 @@ public interface CurrentUserService {
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return {@link UserResp}
+     * @return Объект-контейнер сущности {@link User}
      */
-    UserResp getInfo();
+    Optional<User> getUser();
 
     /**
      * Изменение информации об зарегистрированном пользователе
      *
-     * @param userRequest новая информация об пользователе
-     * @return {@link UserResp} обновленные данные, в случае успешного изменения
+     * @param user новая информация об пользователе
+     * @return {@link User} с обновленными данными, в случае успешного изменения
      */
-    UserResp updateInfo(@NotNull UserReq userRequest);
+    Optional<User> updateUser(@NotNull User user);
 
     /**
      * Импортирует изображение для аватарки зарегистрированном пользователя
@@ -37,6 +38,6 @@ public interface CurrentUserService {
      * @param image объект {@link MultipartFile}
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
-    boolean importImage(@NotNull MultipartFile image);
+    boolean updateUserImage(@NotNull MultipartFile image);
 
 }

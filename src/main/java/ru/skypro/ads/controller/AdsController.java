@@ -5,65 +5,114 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.ResponseWrapperAdsDto;
+import ru.skypro.ads.dto.Ads;
+import ru.skypro.ads.dto.CreateAds;
+import ru.skypro.ads.dto.ResponseWrapperAds;
+import ru.skypro.ads.service.AdsService;
 
-import javax.xml.crypto.OctetStreamData;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Slf4j
 @RestController
-@RequestMapping("/ads")
-@CrossOrigin(value = "http://localhost:3000")
 @RequiredArgsConstructor
-@Tag(name = "Объявления")
+@RequestMapping("/ads")
+@CrossOrigin(value = "http://localhost:8080")
 public class AdsController {
 
-    // TODO: 23.05.2023 see openapi.yaml
+    private final AdsService adsService;
 
-    @Operation(summary = "Получить объявления авторизованного пользователя",
+    @Operation(summary = "Получить все объявления",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     array = @ArraySchema(schema = @Schema(
-                                            implementation = ResponseWrapperAdsDto.class)))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized",
-                            content = @Content(mediaType = ""))
+                                            implementation = ResponseWrapperAds.class)))),
             })
-    @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(
-            Authentication authentication
-    ) {
-        log.info("метод получения объявлений авторизованного пользователя");
-        return ResponseEntity.ok(null);
+    @GetMapping()
+    public ResponseEntity<ResponseWrapperAds> getAllAds() {
+        ResponseWrapperAds ads = new ResponseWrapperAds();
+        return ResponseEntity.ok(ads);
     }
 
-    @Operation(summary = "Обновить картинку объявления",
+    @Operation(
+            summary = "Добавить объявление",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Created",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    array = @ArraySchema(schema = @Schema(
+                                            implementation = ResponseWrapperAds.class)))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
+            }
+    )
+    @PostMapping()
+    public ResponseEntity<Ads> addAd(@NotNull Authentication authentication,
+                                     @RequestPart("properties") @Valid @NotNull @NotBlank Object properties,
+                                     @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
+    ) {
+        return ResponseEntity.ok(adsService.save(properties, authentication.getName(), image));
+    }
+
+    @Operation(
+            summary = "Получить информацию об объявлении",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
-                            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     array = @ArraySchema(schema = @Schema(
-                                            implementation = String.class)))),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized",
-                            content = @Content(mediaType = "")),
-                    @ApiResponse(responseCode = "403", description = "Forbidden",
-                            content = @Content(mediaType = ""))
-            })
-
-    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateImage(
-            @PathVariable Integer id,
-            @RequestPart(value = "image") MultipartFile file
-    ) {
-        log.info("метод обновления картинки объявления");
-        return ResponseEntity.ok(null);
+                                            implementation = ResponseWrapperAds.class)))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<Ads> getAd(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(adsService.getAd(id));
     }
 
+    @DeleteMapping("{id}")
+    @Operation(summary = "Удалить объявление")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    public ResponseEntity<Void> deleteAd(@PathVariable int id) {
+        if (id <= 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (adsService.deleteAd(id)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
+    @PatchMapping("{id}")
+    @Operation(summary = "Обновить информацию об объявлении")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(
+                                    implementation = Ads.class)))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    public ResponseEntity<Ads> updateAd(@PathVariable int id, @RequestBody CreateAds createAds) {
+        if (id <= 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (adsService.updateAd(id, createAds)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
