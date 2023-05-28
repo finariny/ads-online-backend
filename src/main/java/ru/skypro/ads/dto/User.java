@@ -3,7 +3,7 @@ package ru.skypro.ads.dto;
 import lombok.Data;
 
 @Data
-public abstract class UserDto {
+public class User {
     protected Integer id;
     protected String email;
     protected String firstName;
