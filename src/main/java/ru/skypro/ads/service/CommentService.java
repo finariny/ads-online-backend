@@ -1,17 +1,17 @@
 package ru.skypro.ads.service;
 
 import ru.skypro.ads.dto.Comment;
-import ru.skypro.ads.dto.CommentCreate;
-import ru.skypro.ads.dto.CommentList;
+import ru.skypro.ads.dto.CreateComment;
+import ru.skypro.ads.dto.ResponseWrapperComment;
 
-public interface CommentListService {
+public interface CommentService {
 
     /**
      * Метод для получения всех комментарий к объявлению
      * @param id принимает идентификатор объявления
      * @return возвращает комментарии
      */
-    CommentList getComments(int id);
+    ResponseWrapperComment getComments(int id);
 
     /**
      * Метод для добавления комментария в объявление
@@ -19,7 +19,7 @@ public interface CommentListService {
      * @param text текст комментария
      * @return возвращает текст комментария
      */
-    Comment addComment(int id, CommentCreate text);
+    Comment addComment(int id, CreateComment text);
 
     /**
      * Написать ошибку 403, указывает на комментарий, который нельзя удалить
