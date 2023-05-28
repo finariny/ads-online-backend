@@ -65,7 +65,9 @@ public class CommentListController {
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     public ResponseEntity<Void> deleteComment(@PathVariable int adId, @PathVariable int commentId) {
-
+        if (adId <= 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         if (commentListService.deleteComment(adId, commentId)) {
             return ResponseEntity.ok().build();
         }
@@ -81,6 +83,9 @@ public class CommentListController {
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     public ResponseEntity<Comment> updateComment(@PathVariable int adId, @PathVariable int commentId, @RequestBody Comment comment) {
+        if (adId <= 0) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Comment comment1 = commentListService.updateComment(adId, commentId, comment);
         if (comment1 != null) {
             return ResponseEntity.ok(comment1);
