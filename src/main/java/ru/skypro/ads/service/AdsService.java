@@ -1,8 +1,11 @@
 package ru.skypro.ads.service;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.Ads;
 import ru.skypro.ads.dto.CreateAds;
+import ru.skypro.ads.dto.ResponseWrapperAds;
 
 import java.util.Collection;
 
@@ -49,4 +52,30 @@ public interface AdsService {
      * @return <code>true</code> если объявление обновлено, <code>false</code> в случае неудачи
      */
     boolean updateAd(int id, CreateAds createAds);
+
+    /**
+     * Возвращает объявления авторизованного пользователя
+     *
+     * @param auth
+     * @return список объявлений
+     */
+    ResponseWrapperAds getAdsMe(Authentication auth);
+
+
+    /**
+     * Обновляет картинку объявления
+     *
+     * @param id первичный ключ объявления
+     * @param file новая картинка
+     * @return добавленная картинка
+     */
+    byte[] updateImage(Integer id, MultipartFile file);
+
+
+
+
+
+
+
+
 }

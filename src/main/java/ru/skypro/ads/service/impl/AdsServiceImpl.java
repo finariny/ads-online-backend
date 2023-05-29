@@ -1,9 +1,11 @@
 package ru.skypro.ads.service.impl;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.Ads;
 import ru.skypro.ads.dto.CreateAds;
+import ru.skypro.ads.dto.ResponseWrapperAds;
 import ru.skypro.ads.service.AdsService;
 
 import java.util.Collection;
@@ -69,4 +71,33 @@ public class AdsServiceImpl implements AdsService {
     public boolean updateAd(int id, CreateAds createAds) {
         return false;
     }
+
+
+    /**
+     * Получает данные об объявлениях пользователя
+     *
+     * @param auth данные о текущем пользователе
+     * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAds}
+     */
+    @Override
+    public ResponseWrapperAds getAdsMe(Authentication auth) {
+        return null;
+    }
+
+    /**
+     * Обновляет картинку объявления
+     *
+     * @param id первичный ключ объявления
+     * @param file новая картинка
+     * @return добавленная картинка
+     */
+    @Override
+    public byte[] updateImage(Integer id, MultipartFile file) {
+        return new byte[0];
+    }
+
+
 }
+
+
+

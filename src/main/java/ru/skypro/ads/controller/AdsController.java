@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.Ads;
@@ -21,8 +22,10 @@ import ru.skypro.ads.service.AdsService;
 
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -115,4 +118,38 @@ public class AdsController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @Operation(summary = "Получить объявления авторизованного пользователя",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    array = @ArraySchema(schema = @Schema(
+                                            implementation = ResponseWrapperAds.class)))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
+            })
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWrapperAds> getAdsMe(@NotNull Authentication authentication) {
+        return ResponseEntity.ok(adsService.getAdsMe(authentication));
+    }
+
+    @Operation(summary = "Обновить картинку объявления",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK",
+                            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                                    array = @ArraySchema(schema = @Schema(
+                                            implementation = String.class)))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
+            })
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<byte[]> updateImage(
+            @PathVariable Integer id,
+            @RequestPart(value = "image") MultipartFile file
+    ) {
+        return ResponseEntity.ok(adsService.updateImage(id,file));
+    }
+
+
+
 }
