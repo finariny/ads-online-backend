@@ -23,6 +23,7 @@ import ru.skypro.ads.service.AdsService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 
 @Slf4j
 @RestController
@@ -41,9 +42,8 @@ public class AdsController {
                                             implementation = ResponseWrapperAds.class)))),
             })
     @GetMapping()
-    public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        ResponseWrapperAds ads = new ResponseWrapperAds();
-        return ResponseEntity.ok(ads);
+    public ResponseEntity<Collection<Ads>> getAllAds() {
+        return ResponseEntity.ok(adsService.getAllAds());
     }
 
     @Operation(
@@ -57,11 +57,14 @@ public class AdsController {
             }
     )
     @PostMapping()
-    public ResponseEntity<Ads> addAd(@NotNull Authentication authentication,
+    public ResponseEntity<Ads> addAd(
                                      @RequestPart("properties") @Valid @NotNull @NotBlank Object properties,
                                      @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
     ) {
-        return ResponseEntity.ok(adsService.save(properties, authentication.getName(), image));
+        if (adsService.save(properties, image)==null){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(adsService.save(properties, image));
     }
 
     @Operation(

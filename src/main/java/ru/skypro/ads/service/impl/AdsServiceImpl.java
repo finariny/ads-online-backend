@@ -25,12 +25,11 @@ public class AdsServiceImpl implements AdsService {
      * Добавление объявления
      *
      * @param ads
-     * @param name
      * @param image объект {@link MultipartFile}
      * @return объект {@link Ads}
      */
     @Override
-    public Ads save(Object ads, String name, MultipartFile image) {
+    public Ads save(Object ads, MultipartFile image) {
         return null;
     }
 
