@@ -22,11 +22,10 @@ public interface AdsService {
      * Добавление объявления
      *
      * @param ads
-     * @param name
      * @param image объект {@link MultipartFile}
      * @return объект {@link Ads}
      */
-    Ads save(Object ads, String name, MultipartFile image);
+    Ads save(Object ads, MultipartFile image);
 
     /**
      * Получает информацию об объявлении
