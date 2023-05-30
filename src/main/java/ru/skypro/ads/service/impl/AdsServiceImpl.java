@@ -1,10 +1,12 @@
 package ru.skypro.ads.service.impl;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.Ads;
 import ru.skypro.ads.dto.CreateAds;
+import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.dto.ResponseWrapperAds;
 import ru.skypro.ads.service.AdsService;
 
@@ -12,6 +14,8 @@ import java.util.Collection;
 
 @Service
 public class AdsServiceImpl implements AdsService {
+    @Autowired
+    private AdsRepository adsRepository;
 
     /**
      * Получение всех объявлений
@@ -97,6 +101,3 @@ public class AdsServiceImpl implements AdsService {
 
 
 }
-
-
-
