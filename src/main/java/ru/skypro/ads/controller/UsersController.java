@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @Validated
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(value = "http://localhost:8080")
+@CrossOrigin(value = "http://localhost:3000")
 @Tag(name = "Пользователи")
 public class UsersController {
 
@@ -37,7 +37,7 @@ public class UsersController {
             {@ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "401"),
                     @ApiResponse(responseCode = "403")})
-    public ResponseEntity<?> setPassword(@RequestBody @Valid NewPassword newPassword) {
+    public ResponseEntity<Void> setPassword(@RequestBody @Valid NewPassword newPassword) {
         if (currentUserService.setPassword(newPassword.getCurrentPassword(), newPassword.getNewPassword())) {
             return ResponseEntity.ok().build();
         } else {
@@ -64,7 +64,7 @@ public class UsersController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<?> updateUserImage(@RequestBody @Valid MultipartFile image) {
+    public ResponseEntity<Void> updateUserImage(@RequestBody @Valid MultipartFile image) {
         if (currentUserService.updateUserImage(image)) {
             return ResponseEntity.ok().build();
         } else {
