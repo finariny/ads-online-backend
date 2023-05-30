@@ -14,7 +14,7 @@ import java.util.Collection;
 public class AdsServiceImpl implements AdsService {
 
     /**
-     * Получение всех объявлений
+     * Получает все объявления
      *
      * @return коллекция всех объектов {@link Ads}
      */
@@ -24,14 +24,14 @@ public class AdsServiceImpl implements AdsService {
     }
 
     /**
-     * Добавление объявления
+     * Добавляет объявление
      *
-     * @param ads
+     * @param ad    объект {@link Ads}
      * @param image объект {@link MultipartFile}
      * @return объект {@link Ads}
      */
     @Override
-    public Ads save(Object ads, MultipartFile image) {
+    public Ads saveAd(CreateAds ad, MultipartFile image) {
         return null;
     }
 
@@ -43,7 +43,7 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public Ads getAd(Integer id) {
-//        AdsDto ads = adsRepository.findById(id).orElseThrow();
+//        Ads ads = adsRepository.findById(id).orElseThrow();
 //        return ads;
         return null;
     }
@@ -64,13 +64,12 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id        идентификатор объявления
      * @param createAds новая информация об объявлении
-     * @return <code>true</code> если объявление обновлено, <code>false</code> в случае неудачи
+     * @return объект {@link Ads}
      */
     @Override
-    public boolean updateAd(int id, CreateAds createAds) {
-        return false;
+    public Ads updateAd(int id, CreateAds createAds) {
+        return null;
     }
-
 
     /**
      * Получает данные об объявлениях пользователя
@@ -86,7 +85,7 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Обновляет картинку объявления
      *
-     * @param id первичный ключ объявления
+     * @param id   идентификатор объявления
      * @param file новая картинка
      * @return добавленная картинка
      */
@@ -95,8 +94,4 @@ public class AdsServiceImpl implements AdsService {
         return new byte[0];
     }
 
-
 }
-
-
-
