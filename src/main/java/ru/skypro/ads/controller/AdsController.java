@@ -62,7 +62,7 @@ public class AdsController {
     )
     @PostMapping()
     public ResponseEntity<Ads> addAd(
-                                     @RequestPart("properties") @Valid @NotNull @NotBlank Object properties,
+                                     @RequestPart("properties") @Valid @NotNull @NotBlank CreateAds properties,
                                      @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
     ) {
         if (adsService.save(properties, image)==null){

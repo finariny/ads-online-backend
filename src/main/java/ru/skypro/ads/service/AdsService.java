@@ -21,11 +21,11 @@ public interface AdsService {
     /**
      * Добавление объявления
      *
-     * @param ads
+     * @param ads представляет текстовые поля из класса AdsCreate для дальнейшего формирования полного Ads
      * @param image объект {@link MultipartFile}
      * @return объект {@link Ads}
      */
-    Ads save(Object ads, MultipartFile image);
+    Ads save(CreateAds ads, MultipartFile image);
 
     /**
      * Получает информацию об объявлении
