@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.entity.Ads;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
@@ -38,10 +39,7 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public AdsDto saveAd(CreateAdsDto ads, MultipartFile image) {
-        ru.skypro.ads.entity.Ads saveAds = new ru.skypro.ads.entity.Ads();
-        saveAds.setTitle(ads.getTitle());
-        saveAds.setDescription(ads.getDescription());
-        saveAds.setPrice(ads.getPrice());
+        Ads saveAds = AdsMapper.INSTANCE.adsDtoToAds(ads);
         saveAds.setImage(image.getName()); // Todo продумать работу с image
         adsRepository.save(saveAds);
         return AdsMapper.INSTANCE.adsToAdsDto(saveAds);
@@ -55,7 +53,7 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public AdsDto getAd(Integer id) {
-        ru.skypro.ads.entity.Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         return AdsMapper.INSTANCE.adsToAdsDto(ads);
     }
 

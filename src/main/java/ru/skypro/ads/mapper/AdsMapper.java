@@ -1,9 +1,12 @@
 package ru.skypro.ads.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 import ru.skypro.ads.dto.AdsDto;
+import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.entity.Ads;
 
 import java.util.List;
 
@@ -13,10 +16,13 @@ public interface AdsMapper {
     //Чтобы в сервисах удобно взаимодействовать с этим маппером не создавая лишних экземпляров
     AdsMapper INSTANCE = Mappers.getMapper(AdsMapper.class);
 
-    AdsDto /*-AdsDto Dto*/ adsToAdsDto (ru.skypro.ads.entity.Ads ads);
+    AdsDto adsToAdsDto (Ads ads);
 
-    ru.skypro.ads.entity.Ads adsDtoToAds(AdsDto adsDto);
+    Ads adsDtoToAds(AdsDto adsDto);
+    Ads adsDtoToAds(CreateAdsDto createAdsDto);
 
-    List<AdsDto> listAdsToAdsDto(List<ru.skypro.ads.entity.Ads> adsList);
+
+
+    List<AdsDto> listAdsToAdsDto(List<Ads> adsList);
 
 }
