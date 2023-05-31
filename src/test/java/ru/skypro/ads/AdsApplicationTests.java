@@ -1,10 +1,10 @@
-package com.example.adsonlinebackend;
+package ru.skypro.ads;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AdsOnlineBackendApplicationTests {
+class AdsApplicationTests {
 
 	@Test
 	void contextLoads() {
