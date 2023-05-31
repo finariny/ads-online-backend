@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.Ads;
@@ -22,10 +21,8 @@ import ru.skypro.ads.service.AdsService;
 
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.util.Collection;
 
 
@@ -61,7 +58,7 @@ public class AdsController {
             }
     )
     @PostMapping()
-    public ResponseEntity<Ads> addAd(
+    public ResponseEntity<Ads> addAds(
                                      @RequestPart("properties") @Valid @NotNull @NotBlank CreateAds properties,
                                      @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
     ) {
