@@ -3,10 +3,8 @@ package ru.skypro.ads.dto;
 import lombok.Data;
 
 @Data
-public class Ads {
-    private Integer author;
-    private String image;
-    private Integer pk;
+public class CreateAdsDto {
+    private String description;
     private Integer price;
     private String title;
 }

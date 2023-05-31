@@ -3,7 +3,7 @@ package ru.skypro.ads.dto;
 import lombok.Data;
 
 @Data
-public class FullAds {
+public class FullAdsDto {
     private Integer pk;
     private String authorFirstName;
     private String authorLastName;

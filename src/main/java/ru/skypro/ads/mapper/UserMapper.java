@@ -1,12 +1,14 @@
 package ru.skypro.ads.mapper;
+
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
-import ru.skypro.ads.dto.User;
+import ru.skypro.ads.dto.UserDto;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface UserMapper {
+
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    User /*- это User DTO*/ userToUserDto(ru.skypro.ads.entity.User user);
+    UserDto /*- это UserDto DTO*/ userToUserDto(ru.skypro.ads.entity.User user);
 
 }

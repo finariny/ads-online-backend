@@ -2,7 +2,7 @@ package ru.skypro.ads.service;
 
 import com.sun.istack.NotNull;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.User;
+import ru.skypro.ads.dto.UserDto;
 
 import java.util.Optional;
 
@@ -20,17 +20,17 @@ public interface CurrentUserService {
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return Объект-контейнер сущности {@link User}
+     * @return Объект-контейнер сущности {@link UserDto}
      */
-    Optional<User> getUser();
+    Optional<UserDto> getUser();
 
     /**
      * Изменение информации об зарегистрированном пользователе
      *
-     * @param user новая информация об пользователе
-     * @return {@link User} с обновленными данными, в случае успешного изменения
+     * @param userDto новая информация об пользователе
+     * @return {@link UserDto} с обновленными данными, в случае успешного изменения
      */
-    Optional<User> updateUser(@NotNull User user);
+    Optional<UserDto> updateUser(@NotNull UserDto userDto);
 
     /**
      * Импортирует изображение для аватарки зарегистрированном пользователя
