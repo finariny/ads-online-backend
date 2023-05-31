@@ -55,7 +55,7 @@ public class AdsServiceImpl implements AdsService {
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean deleteAd(int id) {
+    public boolean removeAd(int id) {
         return false;
     }
 
@@ -67,7 +67,7 @@ public class AdsServiceImpl implements AdsService {
      * @return объект {@link Ads}
      */
     @Override
-    public Ads updateAd(int id, CreateAds createAds) {
+    public Ads updateAds(int id, CreateAds createAds) {
         return null;
     }
 
