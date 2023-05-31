@@ -1,5 +1,5 @@
 package ru.skypro.ads.dto;
 
-public enum Role {
+public enum RoleDto {
     USER, ADMIN
 }
