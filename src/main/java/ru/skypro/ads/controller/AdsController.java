@@ -136,7 +136,9 @@ public class AdsController {
             @ApiResponse(responseCode = "403")
     })
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateAdsImage(@PathVariable int id, @RequestBody @Valid MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(
+            @PathVariable int id,
+            @RequestPart(value = "image") @Valid MultipartFile image) {
         return ResponseEntity.ok(adsService.updateImage(id, image));
     }
 }

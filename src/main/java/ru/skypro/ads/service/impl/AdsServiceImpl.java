@@ -86,11 +86,11 @@ public class AdsServiceImpl implements AdsService {
      * Обновляет картинку объявления
      *
      * @param id   идентификатор объявления
-     * @param file новая картинка
+     * @param image новая картинка
      * @return добавленная картинка
      */
     @Override
-    public byte[] updateImage(Integer id, MultipartFile file) {
+    public byte[] updateImage(int id, MultipartFile image) {
         return new byte[0];
     }
 

@@ -63,9 +63,9 @@ public interface AdsService {
      * Обновляет картинку объявления
      *
      * @param id   идентификатор объявления
-     * @param file новая картинка
+     * @param image новая картинка
      * @return добавленная картинка
      */
-    byte[] updateImage(Integer id, MultipartFile file);
+    byte[] updateImage(int id, MultipartFile image);
 
 }
