@@ -40,7 +40,7 @@ public interface AdsService {
      * @param id идентификатор объявления
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
-    boolean deleteAd(int id);
+    boolean removeAd(int id);
 
     /**
      * Обновляет информацию об объявлении
@@ -49,7 +49,7 @@ public interface AdsService {
      * @param createAds новая информация об объявлении
      * @return объект {@link Ads}
      */
-    Ads updateAd(int id, CreateAds createAds);
+    Ads updateAds(int id, CreateAds createAds);
 
     /**
      * Возвращает объявления авторизованного пользователя

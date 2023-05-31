@@ -56,10 +56,7 @@ public class AdsController {
             @ApiResponse(responseCode = "401")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ads> addAd(@RequestBody CreateAds properties, @RequestBody @Valid MultipartFile image) {
-        if (adsService.saveAd(properties, image) == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<Ads> addAd(@RequestPart CreateAds properties, @RequestBody @Valid MultipartFile image) {
         return ResponseEntity.ok(adsService.saveAd(properties, image));
     }
 
@@ -72,7 +69,7 @@ public class AdsController {
             @ApiResponse(responseCode = "401")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Ads> getAd(@PathVariable int id) {
+    public ResponseEntity<Ads> getAds(@PathVariable int id) {
         return ResponseEntity.ok(adsService.getAd(id));
     }
 
@@ -83,8 +80,8 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    public ResponseEntity<Void> deleteAd(@PathVariable int id) {
-        if (adsService.deleteAd(id)) {
+    public ResponseEntity<Void> removeAd(@PathVariable int id) {
+        if (adsService.removeAd(id)) {
             return ResponseEntity.ok().build();
         }
         if (id <= 0) {
@@ -103,9 +100,9 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    public ResponseEntity<Ads> updateAd(@PathVariable int id, @RequestBody CreateAds createAds) {
-        if (adsService.updateAd(id, createAds) != null) {
-            return ResponseEntity.ok(adsService.updateAd(id, createAds));
+    public ResponseEntity<Ads> updateAds(@PathVariable int id, @RequestBody CreateAds createAds) {
+        if (adsService.updateAds(id, createAds) != null) {
+            return ResponseEntity.ok(adsService.updateAds(id, createAds));
         }
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -136,9 +133,7 @@ public class AdsController {
             @ApiResponse(responseCode = "403")
     })
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(
-            @PathVariable int id,
-            @RequestPart(value = "image") @Valid MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(@PathVariable int id, @RequestPart @Valid MultipartFile image) {
         return ResponseEntity.ok(adsService.updateImage(id, image));
     }
 }

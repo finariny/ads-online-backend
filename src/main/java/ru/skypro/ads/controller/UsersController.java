@@ -64,7 +64,7 @@ public class UsersController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<Void> updateUserImage(@RequestBody @Valid MultipartFile image) {
+    public ResponseEntity<Void> updateUserImage(@RequestPart @Valid MultipartFile image) {
         if (currentUserService.updateUserImage(image)) {
             return ResponseEntity.ok().build();
         } else {
