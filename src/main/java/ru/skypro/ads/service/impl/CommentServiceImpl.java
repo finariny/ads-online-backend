@@ -1,24 +1,24 @@
 package ru.skypro.ads.service.impl;
 
 import org.springframework.stereotype.Service;
-import ru.skypro.ads.dto.Comment;
-import ru.skypro.ads.dto.CreateComment;
-import ru.skypro.ads.dto.ResponseWrapperComment;
+import ru.skypro.ads.dto.CommentDto;
+import ru.skypro.ads.dto.CreateCommentDto;
+import ru.skypro.ads.dto.ResponseWrapperCommentDto;
 import ru.skypro.ads.service.CommentService;
 
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    private ResponseWrapperComment responseWrapperComment;
+    private ResponseWrapperCommentDto responseWrapperCommentDto;
 
     @Override
-    public ResponseWrapperComment getComments(int id) {
-        return responseWrapperComment;
+    public ResponseWrapperCommentDto getComments(int id) {
+        return responseWrapperCommentDto;
     }
 
     @Override
-    public Comment addComment(int id, CreateComment text) {
-        return new Comment();
+    public CommentDto addComment(int id, CreateCommentDto text) {
+        return new CommentDto();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment updateComment(Integer adId, Integer commentId, Comment comment) {
+    public CommentDto updateComment(Integer adId, Integer commentId, CommentDto commentDto) {
         return null;
     }
 }

@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.NewPassword;
-import ru.skypro.ads.dto.User;
+import ru.skypro.ads.dto.NewPasswordDto;
+import ru.skypro.ads.dto.UserDto;
 import ru.skypro.ads.service.CurrentUserService;
 
 import javax.validation.Valid;
@@ -37,8 +37,8 @@ public class UsersController {
             {@ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "401"),
                     @ApiResponse(responseCode = "403")})
-    public ResponseEntity<Void> setPassword(@RequestBody @Valid NewPassword newPassword) {
-        if (currentUserService.setPassword(newPassword.getCurrentPassword(), newPassword.getNewPassword())) {
+    public ResponseEntity<Void> setPassword(@RequestBody @Valid NewPasswordDto newPasswordDto) {
+        if (currentUserService.setPassword(newPasswordDto.getCurrentPassword(), newPasswordDto.getNewPassword())) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -48,15 +48,15 @@ public class UsersController {
     @GetMapping("/me")
     @Operation(summary = "Получить информацию об авторизованном пользователе")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
-    public ResponseEntity<User> getUser() {
+    public ResponseEntity<UserDto> getUser() {
         return ResponseEntity.of(currentUserService.getUser());
     }
 
     @PatchMapping("/me")
     @Operation(summary = "Обновить информацию об авторизованном пользователе")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
-    public ResponseEntity<User> updateUser(@RequestBody @Valid User user) {
-        return ResponseEntity.of(currentUserService.updateUser(user));
+    public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto) {
+        return ResponseEntity.of(currentUserService.updateUser(userDto));
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -1,22 +1,28 @@
 package ru.skypro.ads.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import ru.skypro.ads.dto.Ads;
+import ru.skypro.ads.dto.AdsDto;
+import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.entity.Ads;
 
 import java.util.List;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface AdsMapper {
 
-    //Что бы в сервисах удобно взаимодействовать с этим маппером не создавая лишних экземпляров
+    //Чтобы в сервисах удобно взаимодействовать с этим маппером не создавая лишних экземпляров
     AdsMapper INSTANCE = Mappers.getMapper(AdsMapper.class);
 
-    Ads /*-Ads Dto*/ adsToAdsDto (ru.skypro.ads.entity.Ads ads);
+    AdsDto adsToAdsDto (Ads ads);
 
-    ru.skypro.ads.entity.Ads adsDtoToAds(Ads ads);
+    Ads adsDtoToAds(AdsDto adsDto);
+    Ads adsDtoToAds(CreateAdsDto createAdsDto);
 
-    List<Ads> listAdsToAdsDto(List<ru.skypro.ads.entity.Ads> adsList);
+
+
+    List<AdsDto> listAdsToAdsDto(List<Ads> adsList);
 
 }

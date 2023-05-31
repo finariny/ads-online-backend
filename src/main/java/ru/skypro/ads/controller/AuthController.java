@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.skypro.ads.dto.LoginReq;
-import ru.skypro.ads.dto.RegisterReq;
-import ru.skypro.ads.dto.Role;
+import ru.skypro.ads.dto.LoginReqDto;
+import ru.skypro.ads.dto.RegisterReqDto;
+import ru.skypro.ads.dto.RoleDto;
 import ru.skypro.ads.service.AuthService;
 
-import static ru.skypro.ads.dto.Role.USER;
+import static ru.skypro.ads.dto.RoleDto.USER;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -26,9 +26,9 @@ public class AuthController {
 
     @Tag(name = "Регистрация")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterReq req) {
-        Role role = req.getRole() == null ? USER : req.getRole();
-        if (authService.register(req, role)) {
+    public ResponseEntity<?> register(@RequestBody RegisterReqDto req) {
+        RoleDto roleDto = req.getRoleDto() == null ? USER : req.getRoleDto();
+        if (authService.register(req, roleDto)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -37,7 +37,7 @@ public class AuthController {
 
     @Tag(name = "Авторизация")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginReq req) {
+    public ResponseEntity<?> login(@RequestBody LoginReqDto req) {
         if (authService.login(req.getUsername(), req.getPassword())) {
             return ResponseEntity.ok().build();
         } else {

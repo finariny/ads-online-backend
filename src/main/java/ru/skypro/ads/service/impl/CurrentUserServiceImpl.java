@@ -4,7 +4,7 @@ import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.User;
+import ru.skypro.ads.dto.UserDto;
 import ru.skypro.ads.service.CurrentUserService;
 
 import java.util.Optional;
@@ -12,20 +12,20 @@ import java.util.Optional;
 @Service
 public class CurrentUserServiceImpl implements CurrentUserService {
 
-    private User user;
+    private UserDto userDto;
     private String currentPassword;
 
     @Value("${app.min.passwd.length}")
     private int minPasswdLength;
 
     {
-        user = new User();
-        user.setId(10001);
-        user.setEmail("user@email.local");
-        user.setPhone("+79123456780");
-        user.setImage("image_d5fv6d9fvdfv");
-        user.setLastName("Толстой");
-        user.setFirstName("Лев");
+        userDto = new UserDto();
+        userDto.setId(10001);
+        userDto.setEmail("userDto@email.local");
+        userDto.setPhone("+79123456780");
+        userDto.setImage("image_d5fv6d9fvdfv");
+        userDto.setLastName("Толстой");
+        userDto.setFirstName("Лев");
 
         currentPassword = "password";
     }
@@ -51,25 +51,25 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return {@link User}
+     * @return {@link UserDto}
      */
     @Override
-    public Optional<User> getUser() {
+    public Optional<UserDto> getUser() {
         // TODO: 24.05.2023
-        return Optional.of(this.user);
+        return Optional.of(this.userDto);
     }
 
     /**
      * Изменение информации об зарегистрированном пользователе
      *
-     * @param user новая информация об пользователе
-     * @return {@link User} обновленные данные, в случае успешного изменения
+     * @param userDto новая информация об пользователе
+     * @return {@link UserDto} обновленные данные, в случае успешного изменения
      */
     @Override
-    public Optional<User> updateUser(User user) {
+    public Optional<UserDto> updateUser(UserDto userDto) {
         // TODO: 24.05.2023
-        this.user = user;
-        return Optional.of(this.user);
+        this.userDto = userDto;
+        return Optional.of(this.userDto);
     }
 
     /**

@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.ads.dto.Comment;
-import ru.skypro.ads.dto.CreateComment;
-import ru.skypro.ads.dto.ResponseWrapperComment;
+import ru.skypro.ads.dto.CommentDto;
+import ru.skypro.ads.dto.CreateCommentDto;
+import ru.skypro.ads.dto.ResponseWrapperCommentDto;
 import ru.skypro.ads.service.CommentService;
 
 @Slf4j
@@ -33,10 +33,10 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
-    public ResponseEntity<Comment> addComment(@PathVariable int id, @RequestBody CreateComment text) {
-        Comment addComment = commentService.addComment(id, text);
-        if (addComment != null) {
-            return ResponseEntity.ok(addComment);
+    public ResponseEntity<CommentDto> addComment(@PathVariable int id, @RequestBody CreateCommentDto text) {
+        CommentDto addCommentDto = commentService.addComment(id, text);
+        if (addCommentDto != null) {
+            return ResponseEntity.ok(addCommentDto);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -48,8 +48,8 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    public ResponseEntity<ResponseWrapperComment> getComment(@PathVariable int id) {
-        ResponseWrapperComment comment = commentService.getComments(id);
+    public ResponseEntity<ResponseWrapperCommentDto> getComment(@PathVariable int id) {
+        ResponseWrapperCommentDto comment = commentService.getComments(id);
         if (comment == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -82,13 +82,13 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
-    public ResponseEntity<Comment> updateComment(@PathVariable int adId, @PathVariable int commentId, @RequestBody Comment comment) {
+    public ResponseEntity<CommentDto> updateComment(@PathVariable int adId, @PathVariable int commentId, @RequestBody CommentDto commentDto) {
         if (adId <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        Comment comment1 = commentService.updateComment(adId, commentId, comment);
-        if (comment1 != null) {
-            return ResponseEntity.ok(comment1);
+        CommentDto commentDto1 = commentService.updateComment(adId, commentId, commentDto);
+        if (commentDto1 != null) {
+            return ResponseEntity.ok(commentDto1);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

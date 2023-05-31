@@ -4,16 +4,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.Ads;
-import ru.skypro.ads.dto.CreateAds;
+import ru.skypro.ads.dto.AdsDto;
+import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.entity.Ads;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
-import ru.skypro.ads.dto.ResponseWrapperAds;
+import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.service.AdsService;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 public class AdsServiceImpl implements AdsService {
@@ -23,26 +23,23 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Получает все объявления
      *
-     * @return коллекция всех AdsDto сразу конвертируя маппером из репозитория обычных Ads
+     * @return коллекция всех AdsDto сразу конвертируя маппером из репозитория обычных AdsDto
      */
     @Override
-    public Collection<Ads> getAllAds() {
+    public Collection<AdsDto> getAllAds() {
         return AdsMapper.INSTANCE.listAdsToAdsDto(adsRepository.findAll());
     }
 
     /**
      * Добавляет объявление
      *
-     * @param ad    объект {@link Ads}
+     * @param ads   объект {@link AdsDto}
      * @param image объект {@link MultipartFile}
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
     @Override
-    public Ads saveAd(CreateAds ads, MultipartFile image) {
-        ru.skypro.ads.entity.Ads saveAds = new ru.skypro.ads.entity.Ads();
-        saveAds.setTitle(ads.getTitle());
-        saveAds.setDescription(ads.getDescription());
-        saveAds.setPrice(ads.getPrice());
+    public AdsDto saveAd(CreateAdsDto ads, MultipartFile image) {
+        Ads saveAds = AdsMapper.INSTANCE.adsDtoToAds(ads);
         saveAds.setImage(image.getName()); // Todo продумать работу с image
         adsRepository.save(saveAds);
         return AdsMapper.INSTANCE.adsToAdsDto(saveAds);
@@ -52,11 +49,11 @@ public class AdsServiceImpl implements AdsService {
      * Получает информацию об объявлении
      *
      * @param id идентификатор объявления
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
     @Override
-    public Ads getAd(Integer id) {
-        ru.skypro.ads.entity.Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+    public AdsDto getAd(Integer id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         return AdsMapper.INSTANCE.adsToAdsDto(ads);
     }
 
@@ -74,12 +71,12 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Обновляет информацию об объявлении
      *
-     * @param id        идентификатор объявления
-     * @param createAds новая информация об объявлении
-     * @return объект {@link Ads}
+     * @param id           идентификатор объявления
+     * @param createAdsDto новая информация об объявлении
+     * @return объект {@link AdsDto}
      */
     @Override
-    public Ads updateAds(int id, CreateAds createAds) {
+    public AdsDto updateAds(int id, CreateAdsDto createAdsDto) {
         return null;
     }
 
@@ -87,10 +84,10 @@ public class AdsServiceImpl implements AdsService {
      * Получает данные об объявлениях пользователя
      *
      * @param auth данные о текущем пользователе
-     * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAds}
+     * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAdsDto}
      */
     @Override
-    public ResponseWrapperAds getAdsMe(Authentication auth) {
+    public ResponseWrapperAdsDto getAdsMe(Authentication auth) {
         return null;
     }
 
@@ -105,5 +102,5 @@ public class AdsServiceImpl implements AdsService {
     public byte[] updateImage(int id, MultipartFile image) {
         return new byte[0];
     }
-  
+
 }
