@@ -2,9 +2,9 @@ package ru.skypro.ads.service;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.Ads;
-import ru.skypro.ads.dto.CreateAds;
-import ru.skypro.ads.dto.ResponseWrapperAds;
+import ru.skypro.ads.dto.AdsDto;
+import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 
 import java.util.Collection;
 
@@ -13,26 +13,26 @@ public interface AdsService {
     /**
      * Получает все объявления
      *
-     * @return коллекция всех объектов {@link Ads}
+     * @return коллекция всех объектов {@link AdsDto}
      */
-    Collection<Ads> getAllAds();
+    Collection<AdsDto> getAllAds();
 
     /**
      * Добавляет объявление
      *
-     * @param ad    объект {@link CreateAds}
+     * @param ad    объект {@link CreateAdsDto}
      * @param image объект {@link MultipartFile}
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
-    Ads saveAd(CreateAds ad, MultipartFile image);
+    AdsDto saveAd(CreateAdsDto ad, MultipartFile image);
 
     /**
      * Получает информацию об объявлении
      *
      * @param id идентификатор объявления
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
-    Ads getAd(Integer id);
+    AdsDto getAd(Integer id);
 
     /**
      * Удаляет объявление
@@ -46,10 +46,10 @@ public interface AdsService {
      * Обновляет информацию об объявлении
      *
      * @param id        идентификатор объявления
-     * @param createAds новая информация об объявлении
-     * @return объект {@link Ads}
+     * @param createAdsDto новая информация об объявлении
+     * @return объект {@link AdsDto}
      */
-    Ads updateAds(int id, CreateAds createAds);
+    AdsDto updateAds(int id, CreateAdsDto createAdsDto);
 
     /**
      * Возвращает объявления авторизованного пользователя
@@ -57,7 +57,7 @@ public interface AdsService {
      * @param auth
      * @return список объявлений
      */
-    ResponseWrapperAds getAdsMe(Authentication auth);
+    ResponseWrapperAdsDto getAdsMe(Authentication auth);
 
     /**
      * Обновляет картинку объявления
