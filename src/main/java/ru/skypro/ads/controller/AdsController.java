@@ -56,8 +56,11 @@ public class AdsController {
             @ApiResponse(responseCode = "401")
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ads> addAd(@RequestPart CreateAds properties, @RequestBody @Valid MultipartFile image) {
-        return ResponseEntity.ok(adsService.saveAd(properties, image));
+    public ResponseEntity<Ads> addAd(
+                                     @RequestPart("properties") @Valid @NotNull @NotBlank CreateAds properties,
+                                     @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
+    ) {
+        return ResponseEntity.ok(adsService.save(properties, image));
     }
 
     @Operation(summary = "Получить информацию об объявлении")
