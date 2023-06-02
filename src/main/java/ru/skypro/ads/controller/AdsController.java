@@ -124,7 +124,12 @@ public class AdsController {
     })
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
-        return ResponseEntity.ok(adsService.getAdsMe(authentication));
+        ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
+        if(ads != null) {
+            return ResponseEntity.ok(ads);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @Operation(summary = "Обновить картинку объявления")

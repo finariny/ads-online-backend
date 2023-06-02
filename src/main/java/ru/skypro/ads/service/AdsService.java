@@ -1,6 +1,7 @@
 package ru.skypro.ads.service;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
@@ -54,10 +55,10 @@ public interface AdsService {
     /**
      * Возвращает объявления авторизованного пользователя
      *
-     * @param auth
+     * @param authentication
      * @return список объявлений
      */
-    ResponseWrapperAdsDto getAdsMe(Authentication auth);
+    ResponseWrapperAdsDto getAdsMe(Authentication authentication);
 
     /**
      * Обновляет картинку объявления

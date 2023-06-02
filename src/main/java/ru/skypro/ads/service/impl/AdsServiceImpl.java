@@ -7,18 +7,27 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
+import ru.skypro.ads.exception.UserNotFoundException;
 import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
+import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class AdsServiceImpl implements AdsService {
     @Autowired
     private AdsRepository adsRepository;
+    private UserRepository userRepository;
+
+    public AdsServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     /**
      * Получает все объявления
@@ -83,12 +92,19 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Получает данные об объявлениях пользователя
      *
-     * @param auth данные о текущем пользователе
+     * @param authentication данные о текущем пользователе
      * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAdsDto}
      */
     @Override
-    public ResponseWrapperAdsDto getAdsMe(Authentication auth) {
-        return null;
+    public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
+        User author = userRepository.findByUsername(authentication.getName());
+        if (author == null) {
+            throw new UserNotFoundException();
+        }
+        List<AdsDto> ads = adsRepository.findByAuthor(author).stream()
+                .map(ad -> AdsMapper.INSTANCE.adsToAdsDto(ad))
+                .toList();
+        return new ResponseWrapperAdsDto(ads.size(), ads);
     }
 
     /**
