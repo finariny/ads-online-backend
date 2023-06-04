@@ -23,6 +23,7 @@ import ru.skypro.ads.service.AdsService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.Collection;
 
 
@@ -120,7 +121,8 @@ public class AdsController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(
                                     implementation = ResponseWrapperAdsDto.class)))),
-            @ApiResponse(responseCode = "401")
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized")
     })
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
@@ -138,11 +140,19 @@ public class AdsController {
                     content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
                             array = @ArraySchema(schema = @Schema(
                                     implementation = String.class)))),
-            @ApiResponse(responseCode = "401"),
-            @ApiResponse(responseCode = "403")
+            @ApiResponse(responseCode = "401",
+                    description = "Unauthorized"),
+            @ApiResponse(responseCode = "403",
+                    description = "Forbidden")
     })
-    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable int id, @RequestPart @Valid MultipartFile image) {
-        return ResponseEntity.ok(adsService.updateImage(id, image));
+    @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateImage(@PathVariable("id") int id,
+                                         @RequestPart(value = "image") @Valid MultipartFile image,
+                                         @NotNull Authentication authentication) throws IOException {
+        if(adsService.updateImage(id, image, authentication)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

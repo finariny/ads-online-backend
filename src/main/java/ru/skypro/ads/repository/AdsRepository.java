@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface AdsRepository extends JpaRepository<Ads, Integer> {
-    List<Ads> findByAuthor(User author);
+    List<Ads> findByUser(User author);
 }

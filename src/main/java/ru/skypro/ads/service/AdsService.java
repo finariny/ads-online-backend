@@ -7,6 +7,7 @@ import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface AdsService {
@@ -67,6 +68,6 @@ public interface AdsService {
      * @param image новая картинка
      * @return добавленная картинка
      */
-    byte[] updateImage(int id, MultipartFile image);
+    boolean updateImage(int id, MultipartFile image,Authentication authentication) throws IOException;
 
 }

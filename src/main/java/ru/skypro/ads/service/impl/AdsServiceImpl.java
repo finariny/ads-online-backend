@@ -1,5 +1,6 @@
 package ru.skypro.ads.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,11 @@ import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
+import ru.skypro.ads.service.ImageService;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,11 +28,18 @@ import java.util.List;
 public class AdsServiceImpl implements AdsService {
     @Autowired
     private AdsRepository adsRepository;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final ImageService imageService;
 
-    public AdsServiceImpl(UserRepository userRepository) {
+    @Value("${ads.image.dir.path}")
+    private String adsImageDir;
+
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, ImageService imageService) {
+        this.adsRepository = adsRepository;
         this.userRepository = userRepository;
+        this.imageService = imageService;
     }
+
 
     /**
      * Получает все объявления
@@ -97,26 +109,32 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
-        User author = userRepository.findByUsername(authentication.getName());
-        if (author == null) {
+        User user = userRepository.findUserByEmail(authentication.getName());
+        if (user == null) {
             throw new UserNotFoundException();
         }
-        List<AdsDto> ads = adsRepository.findByAuthor(author).stream()
-                .map(ad -> AdsMapper.INSTANCE.adsToAdsDto(ad))
-                .toList();
+        List<AdsDto> ads = new ArrayList<>();
+        for (Ads ad : adsRepository.findByUser(user)) {
+            AdsDto adsDto = AdsMapper.INSTANCE.adsToAdsDto(ad);
+            ads.add(adsDto);
+        }
         return new ResponseWrapperAdsDto(ads.size(), ads);
     }
 
     /**
      * Обновляет картинку объявления
      *
-     * @param id   идентификатор объявления
+     * @param id    идентификатор объявления
      * @param image новая картинка
      * @return добавленная картинка
      */
     @Override
-    public byte[] updateImage(int id, MultipartFile image) {
-        return new byte[0];
+    public boolean updateImage(int id, MultipartFile image, Authentication authentication) throws IOException {
+        return true;
+    }
+
+    private Path getFilePath(Ads ads, MultipartFile image) {
+        return Path.of(adsImageDir, ads.getUser().getId() + "-" + ads.getId() + "." + imageService.getExtension(image.getOriginalFilename()));
     }
 
 }
