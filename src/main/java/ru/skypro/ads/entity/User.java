@@ -1,35 +1,60 @@
 package ru.skypro.ads.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import javax.persistence.Table;
-import java.util.Set;
+import javax.validation.constraints.Email;
+import java.util.Objects;
 
 /**
  * Сущность пользователя
  */
 @Entity
-@Data
-@Table(name = "user")
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "USER_")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID", nullable = false)
     private Integer id;
-    @Column(name = "email")
+
+    @Email
+    @Column(name = "EMAIL")
     private String email;
-    @Column(name = "first_name")
+
+    @Column(name = "FIRST_NAME")
     private String firstName;
-    @Column(name = "last_name")
+
+    @Column(name = "LAST_NAME")
     private String lastName;
-    @Column(name = "phone")
+
+    @Column(name = "PHONE")
     private String phone;
-    @Column(name = "pass")
+
+    @Column(name = "PASSWORD")
     private String password;
-    @Column(name = "role")
+
+    @Column(name = "ROLE")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "?", fetch = FetchType.LAZY)
-    private Set<Ads> ads;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getEmail(), user.getEmail())
+                && Objects.equals(getFirstName(), user.getFirstName())
+                && Objects.equals(getLastName(), user.getLastName())
+                && Objects.equals(getPhone(), user.getPhone());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEmail(), getFirstName(), getLastName(), getPhone());
+    }
 }
