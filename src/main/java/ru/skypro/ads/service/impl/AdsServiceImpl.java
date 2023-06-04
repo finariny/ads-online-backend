@@ -2,7 +2,6 @@ package ru.skypro.ads.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
@@ -26,8 +25,8 @@ import java.util.List;
 
 @Service
 public class AdsServiceImpl implements AdsService {
-    @Autowired
-    private AdsRepository adsRepository;
+
+    private final AdsRepository adsRepository;
     private final UserRepository userRepository;
     private final ImageService imageService;
 
@@ -39,7 +38,6 @@ public class AdsServiceImpl implements AdsService {
         this.userRepository = userRepository;
         this.imageService = imageService;
     }
-
 
     /**
      * Получает все объявления
@@ -133,8 +131,8 @@ public class AdsServiceImpl implements AdsService {
         return true;
     }
 
-    private Path getFilePath(Ads ads, MultipartFile image) {
-        return Path.of(adsImageDir, ads.getUser().getId() + "-" + ads.getId() + "." + imageService.getExtension(image.getOriginalFilename()));
-    }
+//    private Path getFilePath(Ads ads, MultipartFile image) {
+//        return Path.of(adsImageDir, ads.getUser().getId() + "-" + ads.getId() + "." + imageService.getExtension(image.getOriginalFilename()));
+//    }
 
 }
