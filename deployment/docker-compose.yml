@@ -4,7 +4,7 @@ networks:
   ads-net:
 
 volumes:
-  abs-db:
+  ads-db:
 
 services:
 
@@ -23,8 +23,17 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - abs-db:/var/lib/postgresql/data
+      - ads-db:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
-
+  ads-front:
+    container_name: ads-front
+    image: ads-front
+    build:
+      context: ./docker-images/front/
+    restart: always
+    networks:
+      ads-net:
+    ports:
+      - "3000:3000"
 
