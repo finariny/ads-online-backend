@@ -23,7 +23,6 @@ import ru.skypro.ads.service.AdsService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.util.Collection;
 
 
@@ -127,7 +126,7 @@ public class AdsController {
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
         ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
-        if(ads != null) {
+        if (ads != null) {
             return ResponseEntity.ok(ads);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -147,9 +146,9 @@ public class AdsController {
     })
     @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> updateImage(@PathVariable("id") int id,
-                                         @RequestPart(value = "image") @Valid MultipartFile image,
-                                         @NotNull Authentication authentication) throws IOException {
-        if(adsService.updateImage(id, image, authentication)) {
+                                         @RequestPart(value = "image") @Valid MultipartFile image
+    ) {
+        if (adsService.updateImage(id, image)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

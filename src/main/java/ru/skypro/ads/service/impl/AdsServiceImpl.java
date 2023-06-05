@@ -1,6 +1,5 @@
 package ru.skypro.ads.service.impl;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,10 +14,6 @@ import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
-import ru.skypro.ads.service.ImageService;
-
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,15 +23,10 @@ public class AdsServiceImpl implements AdsService {
 
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
-    private final ImageService imageService;
 
-    @Value("${ads.image.dir.path}")
-    private String adsImageDir;
-
-    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, ImageService imageService) {
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository) {
         this.adsRepository = adsRepository;
         this.userRepository = userRepository;
-        this.imageService = imageService;
     }
 
     /**
@@ -127,12 +117,8 @@ public class AdsServiceImpl implements AdsService {
      * @return добавленная картинка
      */
     @Override
-    public boolean updateImage(int id, MultipartFile image, Authentication authentication) throws IOException {
+    public boolean updateImage(int id, MultipartFile image) {
         return true;
     }
-
-//    private Path getFilePath(Ads ads, MultipartFile image) {
-//        return Path.of(adsImageDir, ads.getUser().getId() + "-" + ads.getId() + "." + imageService.getExtension(image.getOriginalFilename()));
-//    }
 
 }
