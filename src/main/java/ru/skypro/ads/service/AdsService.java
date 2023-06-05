@@ -6,6 +6,7 @@ import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface AdsService {
@@ -54,18 +55,18 @@ public interface AdsService {
     /**
      * Возвращает объявления авторизованного пользователя
      *
-     * @param auth
+     * @param authentication
      * @return список объявлений
      */
-    ResponseWrapperAdsDto getAdsMe(Authentication auth);
+    ResponseWrapperAdsDto getAdsMe(Authentication authentication);
 
     /**
      * Обновляет картинку объявления
      *
      * @param id   идентификатор объявления
-     * @param file новая картинка
+     * @param image новая картинка
      * @return добавленная картинка
      */
-    byte[] updateImage(Integer id, MultipartFile file);
+    boolean updateImage(int id, MultipartFile image,Authentication authentication) throws IOException;
 
 }

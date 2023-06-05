@@ -1,24 +1,43 @@
 package ru.skypro.ads.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
+import ru.skypro.ads.exception.UserNotFoundException;
 import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
+import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
+import ru.skypro.ads.service.ImageService;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class AdsServiceImpl implements AdsService {
-    @Autowired
-    private AdsRepository adsRepository;
+
+    private final AdsRepository adsRepository;
+    private final UserRepository userRepository;
+    private final ImageService imageService;
+
+    @Value("${ads.image.dir.path}")
+    private String adsImageDir;
+
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, ImageService imageService) {
+        this.adsRepository = adsRepository;
+        this.userRepository = userRepository;
+        this.imageService = imageService;
+    }
 
     /**
      * Получает все объявления
@@ -83,24 +102,37 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Получает данные об объявлениях пользователя
      *
-     * @param auth данные о текущем пользователе
+     * @param authentication данные о текущем пользователе
      * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAdsDto}
      */
     @Override
-    public ResponseWrapperAdsDto getAdsMe(Authentication auth) {
-        return null;
+    public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
+        User user = userRepository.findUserByEmail(authentication.getName());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        List<AdsDto> ads = new ArrayList<>();
+        for (Ads ad : adsRepository.findByUser(user)) {
+            AdsDto adsDto = AdsMapper.INSTANCE.adsToAdsDto(ad);
+            ads.add(adsDto);
+        }
+        return new ResponseWrapperAdsDto(ads.size(), ads);
     }
 
     /**
      * Обновляет картинку объявления
      *
-     * @param id   идентификатор объявления
-     * @param file новая картинка
+     * @param id    идентификатор объявления
+     * @param image новая картинка
      * @return добавленная картинка
      */
     @Override
-    public byte[] updateImage(Integer id, MultipartFile file) {
-        return new byte[0];
+    public boolean updateImage(int id, MultipartFile image, Authentication authentication) throws IOException {
+        return true;
     }
+
+//    private Path getFilePath(Ads ads, MultipartFile image) {
+//        return Path.of(adsImageDir, ads.getUser().getId() + "-" + ads.getId() + "." + imageService.getExtension(image.getOriginalFilename()));
+//    }
 
 }
