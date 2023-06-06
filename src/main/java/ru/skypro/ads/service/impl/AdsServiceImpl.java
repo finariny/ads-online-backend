@@ -15,7 +15,6 @@ import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -35,8 +34,8 @@ public class AdsServiceImpl implements AdsService {
      * @return коллекция всех AdsDto сразу конвертируя маппером из репозитория обычных AdsDto
      */
     @Override
-    public Collection<AdsDto> getAllAds() {
-        return AdsMapper.INSTANCE.listAdsToAdsDto(adsRepository.findAll());
+    public ResponseWrapperAdsDto getAllAds() {
+        return AdsMapper.INSTANCE.listAdsToAdsDto(adsRepository.findAll().size(), adsRepository.findAll());
     }
 
     /**
@@ -74,6 +73,10 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public boolean removeAd(int id) {
+        if (adsRepository.existsById(id)) {
+            adsRepository.deleteById(id);
+            return true;
+        }
         return false;
     }
 
@@ -86,6 +89,12 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public AdsDto updateAds(int id, CreateAdsDto createAdsDto) {
+        if (adsRepository.findById(id).isPresent()) {
+            Ads ads = adsRepository.findById(id).get();
+            AdsMapper.INSTANCE.updateAdsFromCreateAdsDto(createAdsDto, ads);
+            adsRepository.save(ads);
+            return AdsMapper.INSTANCE.adsToAdsDto(ads);
+        }
         return null;
     }
 

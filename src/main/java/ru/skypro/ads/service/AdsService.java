@@ -6,8 +6,6 @@ import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 
-import java.util.Collection;
-
 public interface AdsService {
 
     /**
@@ -15,7 +13,7 @@ public interface AdsService {
      *
      * @return коллекция всех объектов {@link AdsDto}
      */
-    Collection<AdsDto> getAllAds();
+    ResponseWrapperAdsDto getAllAds();
 
     /**
      * Добавляет объявление
