@@ -8,8 +8,5 @@ import java.util.List;
 public class ResponseWrapperAdsDto {
     private Integer count;
     private List<AdsDto> results;
-
-    public ResponseWrapperAdsDto(int size, List<AdsDto> ads) {
-    }
 }
 

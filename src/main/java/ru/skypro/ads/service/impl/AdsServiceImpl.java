@@ -15,7 +15,6 @@ import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,7 +35,8 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public ResponseWrapperAdsDto getAllAds() {
-        return AdsMapper.INSTANCE.listAdsToAdsDto(adsRepository.findAll().size(), adsRepository.findAll());
+        List<Ads> adsList = adsRepository.findAll();
+        return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
@@ -111,12 +111,8 @@ public class AdsServiceImpl implements AdsService {
         if (user == null) {
             throw new UserNotFoundException();
         }
-        List<AdsDto> ads = new ArrayList<>();
-        for (Ads ad : adsRepository.findByUser(user)) {
-            AdsDto adsDto = AdsMapper.INSTANCE.adsToAdsDto(ad);
-            ads.add(adsDto);
-        }
-        return new ResponseWrapperAdsDto(ads.size(), ads);
+        List<Ads> adsList = adsRepository.findByUser(user);
+        return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
