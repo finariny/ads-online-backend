@@ -23,7 +23,6 @@ import ru.skypro.ads.service.AdsService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
 
 
 @Slf4j
@@ -44,7 +43,7 @@ public class AdsController {
                                     implementation = ResponseWrapperAdsDto.class)))),
     })
     @GetMapping()
-    public ResponseEntity<Collection<AdsDto>> getAllAds() {
+    public ResponseEntity<ResponseWrapperAdsDto> getAllAds() {
         return ResponseEntity.ok(adsService.getAllAds());
     }
 
@@ -85,11 +84,11 @@ public class AdsController {
             @ApiResponse(responseCode = "403")
     })
     public ResponseEntity<Void> removeAd(@PathVariable int id) {
-        if (adsService.removeAd(id)) {
-            return ResponseEntity.ok().build();
-        }
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (adsService.removeAd(id)) {
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -105,11 +104,11 @@ public class AdsController {
             @ApiResponse(responseCode = "403")
     })
     public ResponseEntity<AdsDto> updateAds(@PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
-        if (adsService.updateAds(id, createAdsDto) != null) {
-            return ResponseEntity.ok(adsService.updateAds(id, createAdsDto));
-        }
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        if (adsService.updateAds(id, createAdsDto) != null) {
+            return ResponseEntity.ok(adsService.updateAds(id, createAdsDto));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
