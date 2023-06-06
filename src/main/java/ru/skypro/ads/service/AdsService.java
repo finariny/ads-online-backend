@@ -11,7 +11,7 @@ public interface AdsService {
     /**
      * Получает все объявления
      *
-     * @return коллекция всех объектов {@link AdsDto}
+     * @return объект {@link ResponseWrapperAdsDto}
      */
     ResponseWrapperAdsDto getAllAds();
 

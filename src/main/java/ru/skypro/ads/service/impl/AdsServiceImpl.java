@@ -14,6 +14,7 @@ import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Получает все объявления
      *
-     * @return коллекция всех AdsDto сразу конвертируя маппером из репозитория обычных AdsDto
+     * @return объект {@link ResponseWrapperAdsDto}
      */
     @Override
     public ResponseWrapperAdsDto getAllAds() {
