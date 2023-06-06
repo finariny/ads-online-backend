@@ -52,7 +52,7 @@ public interface AdsService {
     /**
      * Возвращает объявления авторизованного пользователя
      *
-     * @param authentication
+     * @param authentication данные о текущем пользователе
      * @return список объявлений
      */
     ResponseWrapperAdsDto getAdsMe(Authentication authentication);
