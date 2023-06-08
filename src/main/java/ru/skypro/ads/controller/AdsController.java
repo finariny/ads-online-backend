@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -122,8 +123,10 @@ public class AdsController {
             @ApiResponse(responseCode = "401",
                     description = "Unauthorized")
     })
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
+        log.info("метод получения всех объявлений авторизованного пользователя");
         ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
         if (ads != null) {
             return ResponseEntity.ok(ads);
