@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -47,8 +48,9 @@ public class AdsServiceImpl implements AdsService {
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto saveAd(CreateAdsDto ads, MultipartFile image) {
+    public AdsDto saveAd(CreateAdsDto ads,String email, MultipartFile image) {
         Ads saveAds = AdsMapper.INSTANCE.adsDtoToAds(ads);
+        saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
         saveAds.setImage(image.getName()); // Todo продумать работу с image
         adsRepository.save(saveAds);
         return AdsMapper.INSTANCE.adsToAdsDto(saveAds);
@@ -73,12 +75,14 @@ public class AdsServiceImpl implements AdsService {
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean removeAd(int id) {
-        if (adsRepository.existsById(id)) {
-            adsRepository.deleteById(id);
-            return true;
-        }
-        return false;
+    public boolean removeAd(String email, int id) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        if (user.getRole().equals(Role.ADMIN)|| user.equals(ads.getUser())) {
+                adsRepository.deleteById(id);
+                return true;
+            }
+            return false;
     }
 
     /**
@@ -107,10 +111,7 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
-        User user = userRepository.findUserByEmail(authentication.getName());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        User user = userRepository.findUserByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new);
         List<Ads> adsList = adsRepository.findByUser(user);
         return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
