@@ -1,86 +1,90 @@
 package ru.skypro.ads.service.impl;
 
-import com.sun.istack.NotNull;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.ads.dto.NewPasswordDto;
 import ru.skypro.ads.dto.UserDto;
+import ru.skypro.ads.entity.User;
+import ru.skypro.ads.exception.UserNotFoundException;
+import ru.skypro.ads.mapper.UserMapper;
+import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.CurrentUserService;
 
-import java.util.Optional;
-
+@Log4j2
 @Service
+@RequiredArgsConstructor
 public class CurrentUserServiceImpl implements CurrentUserService {
 
-    private UserDto userDto;
-    private String currentPassword;
-
-    @Value("${app.min.passwd.length}")
-    private int minPasswdLength;
-
-    {
-        userDto = new UserDto();
-        userDto.setId(10001);
-        userDto.setEmail("userDto@email.local");
-        userDto.setPhone("+79123456780");
-        userDto.setImage("image_d5fv6d9fvdfv");
-        userDto.setLastName("Толстой");
-        userDto.setFirstName("Лев");
-
-        currentPassword = "password";
-    }
+    private final UserRepository userRepository;
 
     /**
      * Изменение пароля зарегистрированного пользователя
      *
-     * @param currentPassword текущий пароль
-     * @param newPassword     новый пароль
+     * @param newPasswordDto {@link NewPasswordDto} объект, содержащий текущий и новый пароли
+     * @param authentication {@link Authentication}
      * @return <code>true</code> если пароль изменен, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean setPassword(@NotNull String currentPassword, @NotNull String newPassword) {
-        // TODO: 24.05.2023
-
-        if (this.currentPassword.equals(currentPassword) && newPassword.length() > minPasswdLength) {
-            this.currentPassword = newPassword;
-            return true;
+    public boolean setPassword(NewPasswordDto newPasswordDto, Authentication authentication) {
+        try {
+            User user = userRepository
+                    .findUserByEmail(authentication.getName())
+                    .orElseThrow(UserNotFoundException::new);
+            if (!newPasswordDto.getCurrentPassword().equals(user.getPassword())) {
+                throw new RuntimeException("Не совпадают пароли");
+            }
+            user.setPassword(newPasswordDto.getNewPassword());
+            userRepository.save(user);
+        } catch (Exception e) {
+            log.warn("Не удалось изменить пароль: " + e.getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return {@link UserDto}
+     * @param authentication {@link Authentication}
+     * @return Объект {@link UserDto}
      */
     @Override
-    public Optional<UserDto> getUser() {
-        // TODO: 24.05.2023
-        return Optional.of(this.userDto);
+    public UserDto getUser(Authentication authentication) {
+        User user = userRepository
+                .findUserByEmail(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+        return UserMapper.INSTANCE.userToUserDto(user);
     }
 
     /**
      * Изменение информации об зарегистрированном пользователе
      *
-     * @param userDto новая информация об пользователе
+     * @param userDto        новая информация об пользователе
+     * @param authentication {@link Authentication}
      * @return {@link UserDto} обновленные данные, в случае успешного изменения
      */
     @Override
-    public Optional<UserDto> updateUser(UserDto userDto) {
-        // TODO: 24.05.2023
-        this.userDto = userDto;
-        return Optional.of(this.userDto);
+    public UserDto updateUser(UserDto userDto, Authentication authentication) {
+        User authenticatedUser = userRepository
+                .findUserByEmail(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+        User updatedUser = UserMapper.INSTANCE.userDtoToUser(userDto);
+        updatedUser.setId(authenticatedUser.getId());
+        return UserMapper.INSTANCE.userToUserDto(userRepository.save(updatedUser));
     }
 
     /**
      * Импортирует изображение для аватарки зарегистрированном пользователя
      *
-     * @param image объект {@link MultipartFile}
+     * @param image          объект {@link MultipartFile}
+     * @param authentication
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean updateUserImage(MultipartFile image) {
-        // TODO: 24.05.2023
+    public boolean updateUserImage(MultipartFile image, Authentication authentication) {
         return false;
     }
 }

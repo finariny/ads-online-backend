@@ -1,43 +1,46 @@
 package ru.skypro.ads.service;
 
-import com.sun.istack.NotNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.ads.dto.NewPasswordDto;
 import ru.skypro.ads.dto.UserDto;
 
-import java.util.Optional;
 
 public interface CurrentUserService {
 
     /**
      * Изменение пароля зарегистрированного пользователя
      *
-     * @param currentPassword текущий пароль
-     * @param newPassword     новый пароль
+     * @param newPasswordDto {@link NewPasswordDto} объект, содержащий текущий и новый пароли
+     * @param authentication {@link Authentication}
      * @return <code>true</code> если пароль изменен, <code>false</code> в случае неудачи
      */
-    boolean setPassword(@NotNull String currentPassword, @NotNull String newPassword);
+    boolean setPassword(NewPasswordDto newPasswordDto, Authentication authentication);
 
     /**
      * Получение информации об зарегистрированном пользователе
      *
-     * @return Объект-контейнер сущности {@link UserDto}
+     * @param authentication {@link Authentication}
+     * @return Объект {@link UserDto}
      */
-    Optional<UserDto> getUser();
+    UserDto getUser(Authentication authentication);
 
     /**
      * Изменение информации об зарегистрированном пользователе
      *
-     * @param userDto новая информация об пользователе
-     * @return {@link UserDto} с обновленными данными, в случае успешного изменения
+     * @param userDto        новая информация об пользователе
+     * @param authentication {@link Authentication}
+     * @return {@link UserDto} обновленные данные, в случае успешного изменения
      */
-    Optional<UserDto> updateUser(@NotNull UserDto userDto);
+    UserDto updateUser(UserDto userDto, Authentication authentication);
 
     /**
      * Импортирует изображение для аватарки зарегистрированном пользователя
      *
-     * @param image объект {@link MultipartFile}
+     * @param image          объект {@link MultipartFile}
+     * @param authentication {@link Authentication}
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
-    boolean updateUserImage(@NotNull MultipartFile image);
+    boolean updateUserImage(MultipartFile image, Authentication authentication);
 
 }
