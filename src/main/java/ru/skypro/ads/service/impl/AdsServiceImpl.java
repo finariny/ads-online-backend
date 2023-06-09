@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
 import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
@@ -12,7 +13,6 @@ import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
 import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
-import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
 
@@ -111,8 +111,9 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
-        User user = userRepository.findUserByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new);
-        List<Ads> adsList = adsRepository.findByUser(user);
+        String username = authentication.getName();
+        User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
+        List<Ads> adsList = adsRepository.findAllByUser(user);
         return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -121,7 +122,7 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id    идентификатор объявления
      * @param image новая картинка
-     * @return добавленная картинка
+     * @return <code>true</code> если картинка обновлена, <code>false</code> в случае неудачи
      */
     @Override
     public boolean updateImage(int id, MultipartFile image) {

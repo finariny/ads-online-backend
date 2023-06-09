@@ -128,9 +128,11 @@ public class AdsController {
             @ApiResponse(responseCode = "401",
                     description = "Unauthorized")
     })
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/me")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
+        log.info("метод получения всех объявлений авторизованного пользователя");
         ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
         if (ads != null) {
             return ResponseEntity.ok(ads);

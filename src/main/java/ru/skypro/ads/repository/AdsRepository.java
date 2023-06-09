@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 public interface AdsRepository extends JpaRepository<Ads, Integer> {
 
-    List<Ads> findByUser(User user);
-
     /**
      * Метод написан используя параметр @Query сортированный по id
      * @return сортированный лист объявлений
@@ -26,4 +24,6 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
      * @return лист объявлений с таким названием
      */
     List<Ads> findByTitleContainingIgnoreCase(String title);
+
+    List<Ads> findAllByUser (User user);
 }
