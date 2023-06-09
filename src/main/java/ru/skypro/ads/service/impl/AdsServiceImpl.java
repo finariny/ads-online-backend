@@ -107,11 +107,9 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
-        User user = userRepository.getUserByEmail(authentication.getName());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        List<Ads> adsList = adsRepository.findByUser(user);
+        String username = authentication.getName();
+        User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
+        List<Ads> adsList = adsRepository.findAllByUser(user);
         return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -120,7 +118,7 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id    идентификатор объявления
      * @param image новая картинка
-     * @return добавленная картинка
+     * @return <code>true</code> если картинка обновлена, <code>false</code> в случае неудачи
      */
     @Override
     public boolean updateImage(int id, MultipartFile image) {
