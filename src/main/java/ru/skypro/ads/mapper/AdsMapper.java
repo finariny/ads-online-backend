@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
@@ -14,11 +13,6 @@ import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface AdsMapper {
-
-    /**
-     * Используется в сервисах для удобного взаимодействия с кодом класса {@link AdsMapper} без создания новых экземпляров
-     */
-    AdsMapper INSTANCE = Mappers.getMapper(AdsMapper.class);
 
     /**
      * Сопоставляет объект {@link Ads} в объект {@link AdsDto}
