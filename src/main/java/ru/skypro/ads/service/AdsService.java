@@ -2,37 +2,35 @@ package ru.skypro.ads.service;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.Ads;
-import ru.skypro.ads.dto.CreateAds;
-import ru.skypro.ads.dto.ResponseWrapperAds;
-
-import java.util.Collection;
+import ru.skypro.ads.dto.AdsDto;
+import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 
 public interface AdsService {
 
     /**
      * Получает все объявления
      *
-     * @return коллекция всех объектов {@link Ads}
+     * @return объект {@link ResponseWrapperAdsDto}
      */
-    Collection<Ads> getAllAds();
+    ResponseWrapperAdsDto getAllAds();
 
     /**
      * Добавляет объявление
      *
-     * @param ad    объект {@link CreateAds}
+     * @param ad    объект {@link CreateAdsDto}
      * @param image объект {@link MultipartFile}
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
-    Ads saveAd(CreateAds ad, MultipartFile image);
+    AdsDto saveAd(CreateAdsDto ad, MultipartFile image);
 
     /**
      * Получает информацию об объявлении
      *
      * @param id идентификатор объявления
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
-    Ads getAd(Integer id);
+    AdsDto getAd(Integer id);
 
     /**
      * Удаляет объявление
@@ -45,27 +43,27 @@ public interface AdsService {
     /**
      * Обновляет информацию об объявлении
      *
-     * @param id        идентификатор объявления
-     * @param createAds новая информация об объявлении
-     * @return объект {@link Ads}
+     * @param id           идентификатор объявления
+     * @param createAdsDto новая информация об объявлении
+     * @return объект {@link AdsDto}
      */
-    Ads updateAds(int id, CreateAds createAds);
+    AdsDto updateAds(int id, CreateAdsDto createAdsDto);
 
     /**
      * Возвращает объявления авторизованного пользователя
      *
-     * @param auth
+     * @param authentication данные о текущем пользователе
      * @return список объявлений
      */
-    ResponseWrapperAds getAdsMe(Authentication auth);
+    ResponseWrapperAdsDto getAdsMe(Authentication authentication);
 
     /**
      * Обновляет картинку объявления
      *
-     * @param id   идентификатор объявления
-     * @param file новая картинка
+     * @param id    идентификатор объявления
+     * @param image новая картинка
      * @return добавленная картинка
      */
-    byte[] updateImage(Integer id, MultipartFile file);
+    boolean updateImage(int id, MultipartFile image);
 
 }

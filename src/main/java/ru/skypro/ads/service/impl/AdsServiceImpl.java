@@ -3,49 +3,67 @@ package ru.skypro.ads.service.impl;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.Ads;
-import ru.skypro.ads.dto.CreateAds;
-import ru.skypro.ads.dto.ResponseWrapperAds;
+import ru.skypro.ads.dto.AdsDto;
+import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.ResponseWrapperAdsDto;
+import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.User;
+import ru.skypro.ads.exception.AdsNotFoundException;
+import ru.skypro.ads.exception.UserNotFoundException;
+import ru.skypro.ads.mapper.AdsMapper;
+import ru.skypro.ads.repository.AdsRepository;
+import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 public class AdsServiceImpl implements AdsService {
 
+    private final AdsRepository adsRepository;
+    private final UserRepository userRepository;
+
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository) {
+        this.adsRepository = adsRepository;
+        this.userRepository = userRepository;
+    }
+
     /**
      * Получает все объявления
      *
-     * @return коллекция всех объектов {@link Ads}
+     * @return объект {@link ResponseWrapperAdsDto}
      */
     @Override
-    public Collection<Ads> getAllAds() {
-        return null;
+    public ResponseWrapperAdsDto getAllAds() {
+        List<Ads> adsList = adsRepository.findAll();
+        return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
      * Добавляет объявление
      *
-     * @param ad    объект {@link Ads}
+     * @param ads   объект {@link AdsDto}
      * @param image объект {@link MultipartFile}
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
     @Override
-    public Ads saveAd(CreateAds ad, MultipartFile image) {
-        return null;
+    public AdsDto saveAd(CreateAdsDto ads, MultipartFile image) {
+        Ads saveAds = AdsMapper.INSTANCE.adsDtoToAds(ads);
+        saveAds.setImage(image.getName()); // Todo продумать работу с image
+        adsRepository.save(saveAds);
+        return AdsMapper.INSTANCE.adsToAdsDto(saveAds);
     }
 
     /**
      * Получает информацию об объявлении
      *
      * @param id идентификатор объявления
-     * @return объект {@link Ads}
+     * @return объект {@link AdsDto}
      */
     @Override
-    public Ads getAd(Integer id) {
-//        Ads ads = adsRepository.findById(id).orElseThrow();
-//        return ads;
-        return null;
+    public AdsDto getAd(Integer id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        return AdsMapper.INSTANCE.adsToAdsDto(ads);
     }
 
     /**
@@ -56,42 +74,57 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public boolean removeAd(int id) {
+        if (adsRepository.existsById(id)) {
+            adsRepository.deleteById(id);
+            return true;
+        }
         return false;
     }
 
     /**
      * Обновляет информацию об объявлении
      *
-     * @param id        идентификатор объявления
-     * @param createAds новая информация об объявлении
-     * @return объект {@link Ads}
+     * @param id           идентификатор объявления
+     * @param createAdsDto новая информация об объявлении
+     * @return объект {@link AdsDto}
      */
     @Override
-    public Ads updateAds(int id, CreateAds createAds) {
+    public AdsDto updateAds(int id, CreateAdsDto createAdsDto) {
+        if (adsRepository.findById(id).isPresent()) {
+            Ads ads = adsRepository.findById(id).get();
+            AdsMapper.INSTANCE.updateAdsFromCreateAdsDto(createAdsDto, ads);
+            adsRepository.save(ads);
+            return AdsMapper.INSTANCE.adsToAdsDto(ads);
+        }
         return null;
     }
 
     /**
      * Получает данные об объявлениях пользователя
      *
-     * @param auth данные о текущем пользователе
-     * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAds}
+     * @param authentication данные о текущем пользователе
+     * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAdsDto}
      */
     @Override
-    public ResponseWrapperAds getAdsMe(Authentication auth) {
-        return null;
+    public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
+        User user = userRepository.getUserByEmail(authentication.getName());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        List<Ads> adsList = adsRepository.findByUser(user);
+        return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
      * Обновляет картинку объявления
      *
-     * @param id   идентификатор объявления
-     * @param file новая картинка
+     * @param id    идентификатор объявления
+     * @param image новая картинка
      * @return добавленная картинка
      */
     @Override
-    public byte[] updateImage(Integer id, MultipartFile file) {
-        return new byte[0];
+    public boolean updateImage(int id, MultipartFile image) {
+        return true;
     }
 
 }

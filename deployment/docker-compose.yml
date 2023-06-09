@@ -1,0 +1,39 @@
+version: '3.1'
+
+networks:
+  ads-net:
+
+volumes:
+  ads-db:
+
+services:
+
+  ads-postgresql:
+    container_name: ads-postgresql
+    image: ads-postgresql
+    build:
+      context: ./docker-images/postgresql/
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password_q1
+    restart: always
+    networks:
+      ads-net:
+    ports:
+      - "5432:5432"
+    volumes:
+      - ads-db:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  ads-front:
+    container_name: ads-front
+    image: ads-front
+    build:
+      context: ./docker-images/front/
+    restart: always
+    networks:
+      ads-net:
+    ports:
+      - "3000:3000"
+

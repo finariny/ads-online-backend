@@ -1,0 +1,1 @@
+FROM ghcr.io/bizinmitya/front-react-avito:v1.16

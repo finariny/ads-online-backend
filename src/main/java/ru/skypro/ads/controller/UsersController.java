@@ -8,11 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.ads.dto.NewPassword;
-import ru.skypro.ads.dto.User;
+import ru.skypro.ads.dto.NewPasswordDto;
+import ru.skypro.ads.dto.UserDto;
 import ru.skypro.ads.service.CurrentUserService;
 
 import javax.validation.Valid;
@@ -37,8 +38,9 @@ public class UsersController {
             {@ApiResponse(responseCode = "200"),
                     @ApiResponse(responseCode = "401"),
                     @ApiResponse(responseCode = "403")})
-    public ResponseEntity<Void> setPassword(@RequestBody @Valid NewPassword newPassword) {
-        if (currentUserService.setPassword(newPassword.getCurrentPassword(), newPassword.getNewPassword())) {
+    public ResponseEntity<Void> setPassword(@RequestBody @Valid NewPasswordDto newPasswordDto,
+                                            Authentication authentication) {
+        if (currentUserService.setPassword(newPasswordDto, authentication)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -48,15 +50,15 @@ public class UsersController {
     @GetMapping("/me")
     @Operation(summary = "Получить информацию об авторизованном пользователе")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
-    public ResponseEntity<User> getUser() {
-        return ResponseEntity.of(currentUserService.getUser());
+    public ResponseEntity<UserDto> getUser(Authentication authentication) {
+        return ResponseEntity.ok(currentUserService.getUser(authentication));
     }
 
     @PatchMapping("/me")
     @Operation(summary = "Обновить информацию об авторизованном пользователе")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
-    public ResponseEntity<User> updateUser(@RequestBody @Valid User user) {
-        return ResponseEntity.of(currentUserService.updateUser(user));
+    public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto, Authentication authentication) {
+        return ResponseEntity.ok(currentUserService.updateUser(userDto, authentication));
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -64,8 +66,8 @@ public class UsersController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<Void> updateUserImage(@RequestPart @Valid MultipartFile image) {
-        if (currentUserService.updateUserImage(image)) {
+    public ResponseEntity<Void> updateUserImage(@RequestPart @Valid MultipartFile image, Authentication authentication) {
+        if (currentUserService.updateUserImage(image, authentication)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
