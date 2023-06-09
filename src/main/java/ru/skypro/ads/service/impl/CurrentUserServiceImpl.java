@@ -20,6 +20,8 @@ public class CurrentUserServiceImpl implements CurrentUserService {
 
     private final UserRepository userRepository;
 
+    private final UserMapper userMapper;
+
     /**
      * Изменение пароля зарегистрированного пользователя
      *
@@ -56,7 +58,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        return UserMapper.INSTANCE.userToUserDto(user);
+        return userMapper.userToUserDto(user);
     }
 
     /**
@@ -71,9 +73,9 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User authenticatedUser = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        User updatedUser = UserMapper.INSTANCE.userDtoToUser(userDto);
+        User updatedUser = userMapper.userDtoToUser(userDto);
         updatedUser.setId(authenticatedUser.getId());
-        return UserMapper.INSTANCE.userToUserDto(userRepository.save(updatedUser));
+        return userMapper.userToUserDto(userRepository.save(updatedUser));
     }
 
     /**
