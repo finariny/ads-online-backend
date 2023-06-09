@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,8 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "Объявления")
 public class AdsController {
 
-    private final AdsService adsService;
+    @Autowired
+    private AdsService adsService;
 
     @Operation(summary = "Получить все объявления")
     @ApiResponses(value = {
@@ -56,12 +58,13 @@ public class AdsController {
                                     implementation = ResponseWrapperAdsDto.class)))),
             @ApiResponse(responseCode = "401")
     })
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> addAd(
+    public ResponseEntity<AdsDto> addAd(@NotNull Authentication authentication,
             @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties,
             @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
     ) {
-        return ResponseEntity.ok(adsService.saveAd(properties, image));
+        return ResponseEntity.ok(adsService.saveAd(properties,authentication.getName(), image));
     }
 
     @Operation(summary = "Получить информацию об объявлении")
@@ -84,14 +87,15 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    public ResponseEntity<Void> removeAd(@PathVariable int id) {
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> removeAd(@NotNull Authentication authentication, @PathVariable int id) {
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (adsService.removeAd(id)) {
+        if (adsService.removeAd(authentication.getName(), id)) {
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}")
@@ -104,7 +108,8 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    public ResponseEntity<AdsDto> updateAds(@PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<AdsDto> updateAds(@NotNull Authentication authentication, @PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -125,6 +130,7 @@ public class AdsController {
     })
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/me")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
         log.info("метод получения всех объявлений авторизованного пользователя");
         ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
@@ -146,8 +152,9 @@ public class AdsController {
             @ApiResponse(responseCode = "403",
                     description = "Forbidden")
     })
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateImage(@PathVariable("id") int id,
+    public ResponseEntity<?> updateImage(@NotNull Authentication authentication, @PathVariable("id") int id,
                                          @RequestPart(value = "image") @Valid MultipartFile image
     ) {
         if (adsService.updateImage(id, image)) {
