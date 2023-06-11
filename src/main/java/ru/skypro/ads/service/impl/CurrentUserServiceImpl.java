@@ -20,6 +20,8 @@ public class CurrentUserServiceImpl implements CurrentUserService {
 
     private final UserRepository userRepository;
 
+    private final UserMapper userMapper;
+
     /**
      * Изменение пароля зарегистрированного пользователя
      *
@@ -59,8 +61,8 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        System.out.println("Запрошенная информация: "+ UserMapper.INSTANCE.userToUserDto(user));
-        return UserMapper.INSTANCE.userToUserDto(user);
+        System.out.println("Запрошенная информация: "+ userMapper.userToUserDto(user));
+        return userMapper.userToUserDto(user);
     }
 
     /**
@@ -86,7 +88,8 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         }
         System.out.println();
         System.out.println(authenticatedUser);
-        return UserMapper.INSTANCE.userToUserDto(userRepository.save(authenticatedUser));
+        return userMapper.userToUserDto(userRepository.save(authenticatedUser));
+
     }
 
     /**
