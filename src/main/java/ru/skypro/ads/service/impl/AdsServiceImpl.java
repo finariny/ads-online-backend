@@ -25,6 +25,8 @@ public class AdsServiceImpl implements AdsService {
     private final UserRepository userRepository;
     private final AdsMapper adsMapper;
 
+    private int id=0;
+
     public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper) {
         this.adsRepository = adsRepository;
         this.userRepository = userRepository;
@@ -52,6 +54,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile image) {
         Ads saveAds = adsMapper.adsDtoToAds(ads);
+        saveAds.setId(++id);
         saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
         saveAds.setImage(image.getName()); // Todo продумать работу с image
         adsRepository.save(saveAds);
