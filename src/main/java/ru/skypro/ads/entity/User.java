@@ -1,9 +1,7 @@
 package ru.skypro.ads.entity;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -41,6 +39,9 @@ public class User {
     @Column(name = "ROLE")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private ImageForExample avatar;
 
     @Override
     public boolean equals(Object o) {
