@@ -1,5 +1,6 @@
 package ru.skypro.ads.entity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,14 +13,13 @@ import java.util.Objects;
  * Сущность пользователя
  */
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Table(name = "USER_")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     private Integer id;
 
     @Email

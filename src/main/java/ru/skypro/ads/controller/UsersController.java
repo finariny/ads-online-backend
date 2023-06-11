@@ -51,6 +51,7 @@ public class UsersController {
     @Operation(summary = "Получить информацию об авторизованном пользователе")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
     public ResponseEntity<UserDto> getUser(Authentication authentication) {
+        System.out.println("Запрос информации о пользователе");
         return ResponseEntity.ok(currentUserService.getUser(authentication));
     }
 

@@ -26,9 +26,11 @@ public class AuthController {
 
     @Tag(name = "Регистрация")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterReqDto req) {
-        RoleDto roleDto = req.getRoleDto() == null ? USER : req.getRoleDto();
-        if (authService.register(req, roleDto)) {
+    public ResponseEntity<?> register(@RequestBody RegisterReqDto registerReqDto) {
+        System.out.println("Нажат контроллер /register");
+//        RoleDto roleDto = registerReqDto.getRoleDto() == null ? USER : registerReqDto.getRoleDto();
+        System.out.println("RoleDTO = "+registerReqDto.getUsername());
+        if (authService.register(registerReqDto)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -38,7 +40,9 @@ public class AuthController {
     @Tag(name = "Авторизация")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReqDto req) {
+        System.out.println("Нажали контроллер Авторизация!");
         if (authService.login(req.getUsername(), req.getPassword())) {
+            System.out.println("ввели логин: "+req.getUsername());
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
