@@ -61,6 +61,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
+        System.out.println("Запрошенная информация: "+ userMapper.userToUserDto(user));
         return userMapper.userToUserDto(user);
     }
 
@@ -76,11 +77,18 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User authenticatedUser = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        User updatedUser = userMapper.userDtoToUser(userDto);
-        updatedUser.setId(authenticatedUser.getId());
+        if(userDto.getFirstName()!=null&&!userDto.getFirstName().isBlank()){
+            authenticatedUser.setFirstName(userDto.getFirstName());
+        }
+        if(userDto.getLastName()!=null&&!userDto.getLastName().isBlank()){
+            authenticatedUser.setLastName(userDto.getLastName());
+        }
+        if(userDto.getPhone()!=null&&!userDto.getPhone().isBlank()){
+            authenticatedUser.setPhone(userDto.getPhone());
+        }
         System.out.println();
-        System.out.println(updatedUser);
-        return UserMapper.INSTANCE.userToUserDto(userRepository.save(updatedUser));
+        System.out.println(authenticatedUser);
+        return userMapper.userToUserDto(userRepository.save(authenticatedUser));
 
     }
 

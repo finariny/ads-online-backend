@@ -62,7 +62,7 @@ public class AdsController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAd(@NotNull Authentication authentication,
             @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties ,
-           @RequestPart("image") @Valid  @NotNull @NotBlank MultipartFile image
+           @RequestPart(value = "image",required = false) @Valid  MultipartFile image
     ) {
         System.out.printf("Нажали добавить обьявление");
         return ResponseEntity.ok(adsService.saveAd(properties,authentication.getName(), image));
