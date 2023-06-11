@@ -7,9 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +27,16 @@ import javax.validation.constraints.NotNull;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
 @Tag(name = "Объявления")
 public class AdsController {
 
-    @Autowired
-    private AdsService adsService;
+    private final AdsService adsService;
+
+    public AdsController(AdsService adsService) {
+        this.adsService = adsService;
+    }
 
     @Operation(summary = "Получить все объявления")
     @ApiResponses(value = {
