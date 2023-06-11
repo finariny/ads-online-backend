@@ -1,5 +1,6 @@
 package ru.skypro.ads.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -7,7 +8,8 @@ import javax.validation.constraints.Positive;
 
 @Data
 public class UserDto {
-    @Positive
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     protected Integer id;
     @Email
     protected String email;

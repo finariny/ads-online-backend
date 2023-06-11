@@ -61,10 +61,11 @@ public class AdsController {
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAd(@NotNull Authentication authentication,
-                                        @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties,
-                                        @RequestPart("image") @Valid @NotNull @NotBlank MultipartFile image
+            @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties ,
+           @RequestPart("image") @Valid  @NotNull @NotBlank MultipartFile image
     ) {
-        return ResponseEntity.ok(adsService.saveAd(properties, authentication.getName(), image));
+        System.out.printf("Нажали добавить обьявление");
+        return ResponseEntity.ok(adsService.saveAd(properties,authentication.getName(), image));
     }
 
     @Operation(summary = "Получить информацию об объявлении")

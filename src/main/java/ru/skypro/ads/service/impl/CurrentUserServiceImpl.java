@@ -31,6 +31,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public boolean setPassword(NewPasswordDto newPasswordDto, Authentication authentication) {
+        System.out.println("Внутри метода SetPassword");
         try {
             User user = userRepository
                     .findUserByEmail(authentication.getName())
@@ -39,6 +40,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
                 throw new RuntimeException("Не совпадают пароли");
             }
             user.setPassword(newPasswordDto.getNewPassword());
+            System.out.println("newPasswordDto.getNewPassword()");
             userRepository.save(user);
         } catch (Exception e) {
             log.warn("Не удалось изменить пароль: " + e.getMessage());
@@ -55,6 +57,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public UserDto getUser(Authentication authentication) {
+        System.out.println("печатаю это до взаимодействия с БД");
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
@@ -75,7 +78,10 @@ public class CurrentUserServiceImpl implements CurrentUserService {
                 .orElseThrow(UserNotFoundException::new);
         User updatedUser = userMapper.userDtoToUser(userDto);
         updatedUser.setId(authenticatedUser.getId());
-        return userMapper.userToUserDto(userRepository.save(updatedUser));
+        System.out.println();
+        System.out.println(updatedUser);
+        return UserMapper.INSTANCE.userToUserDto(userRepository.save(updatedUser));
+
     }
 
     /**
