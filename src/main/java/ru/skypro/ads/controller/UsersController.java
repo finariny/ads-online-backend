@@ -51,7 +51,6 @@ public class UsersController {
 
     @GetMapping("/me")
     @Operation(summary = "Получить информацию об авторизованном пользователе")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
     public ResponseEntity<UserDto> getUser(@NotNull Authentication authentication) {
         System.out.println("Запрос информации о пользователе");

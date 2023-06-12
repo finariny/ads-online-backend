@@ -7,7 +7,7 @@
 - [Вохминов Кирилл](https://github.com/KaerLaende)
 - [Павел Турлачев](https://github.com/turchev)
 - [Айкануш Арутюнян](https://github.com/rafaelovna)
-- [Настя Драгомирова](https://github.com/finariny)
+- [Анастасия Драгомирова](https://github.com/finariny)
 - [Юрий Калынбаев](https://github.com/YURIYKALYNBAEV)
 
 ---
