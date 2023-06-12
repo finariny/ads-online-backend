@@ -48,7 +48,7 @@ public class AdsController {
     })
     @GetMapping()
     public ResponseEntity<ResponseWrapperAdsDto> getAllAds() {
-        System.out.println("Запрос всех обьявлений");
+        log.info("Запрос всех обьявлений");
         return ResponseEntity.ok(adsService.getAllAds());
     }
 
@@ -65,7 +65,7 @@ public class AdsController {
                                         @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties,
                                         @RequestPart(value = "image", required = false) @Valid MultipartFile image
     ) {
-        System.out.println("Нажали добавить обьявление");
+        log.info("Нажали добавить обьявление");
         return ResponseEntity.ok(adsService.saveAd(properties, authentication.getName(), image));
     }
 
@@ -79,7 +79,7 @@ public class AdsController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<FullAdsDto> getAds(@PathVariable int id) {
-        System.out.println("Нажали на обьявление ");
+        log.info("Нажали на обьявление ");
         return ResponseEntity.ok(adsService.getAd(id));
     }
 
@@ -111,7 +111,7 @@ public class AdsController {
     })
     @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdsDto> updateAds(@NotNull Authentication authentication, @PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
-        System.out.println("Сравнения Пользователя: "+ adsService.isThisUser(authentication.getName(),id));
+        log.info("Сравнения Пользователя: "+ adsService.isThisUser(authentication.getName(),id));
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -134,7 +134,7 @@ public class AdsController {
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
         log.info("метод получения всех объявлений авторизованного пользователя");
         ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
-        System.out.println(ads);
+        log.info(String.valueOf(ads));
         if (ads != null) {
             return ResponseEntity.ok(ads);
         } else {

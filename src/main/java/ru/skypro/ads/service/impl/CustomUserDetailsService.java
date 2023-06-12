@@ -1,6 +1,7 @@
 package ru.skypro.ads.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +16,7 @@ import ru.skypro.ads.repository.UserRepository;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
@@ -47,8 +49,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         user.setFirstName(registerReq.getFirstName());
         user.setLastName(registerReq.getLastName());
         user.setPhone(registerReq.getPhone());
-        System.out.println("Метод: createUser. Перед сохранением в БД");
-        System.out.println(user);
+        log.info("Метод: createUser. Перед сохранением в БД");
+        log.info(String.valueOf(user));
         userRepository.save(user);
     }
 

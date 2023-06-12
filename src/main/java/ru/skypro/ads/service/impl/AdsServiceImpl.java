@@ -1,5 +1,6 @@
 package ru.skypro.ads.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import ru.skypro.ads.service.AdsService;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AdsServiceImpl implements AdsService {
 
@@ -40,7 +42,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public ResponseWrapperAdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
-        System.out.println(adsList);
+        log.info(adsList.toString());
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -69,7 +71,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public FullAdsDto getAd(Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        System.out.println(ads);
+        log.info(String.valueOf(ads));
         return adsMapper.toFullAdsDto(ads);
     }
 
@@ -116,7 +118,7 @@ public class AdsServiceImpl implements AdsService {
         String username = authentication.getName();
         User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
         List<Ads> adsList = adsRepository.findAllByUser(user);
-        System.out.println("Где ошибка то???");
+        log.info("Где ошибка то???");
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
