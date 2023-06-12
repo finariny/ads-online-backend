@@ -40,6 +40,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    /**
+     * для мягкого удаления
+     */
+    private boolean deleted;
+
+
 //    @OneToOne(cascade = CascadeType.ALL)
 //    private ImageForExample avatar;
 

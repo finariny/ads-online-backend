@@ -24,7 +24,7 @@ import java.util.Objects;
 })
 public class Ads {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -48,6 +48,11 @@ public class Ads {
 
     @OneToMany(mappedBy = "ads")
     private List<Comment> adsCommentList;
+
+    /**
+     * для мягкого удаления
+     */
+    private boolean deleted;
 
     @Override
     public boolean equals(Object o) {

@@ -22,7 +22,7 @@ import java.util.Objects;
 public class Comment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -39,6 +39,11 @@ public class Comment {
     @JoinColumn(name = "USER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    /**
+     * для мягкого удаления
+     */
+    private boolean deleted;
 
     @Override
     public boolean equals(Object o) {

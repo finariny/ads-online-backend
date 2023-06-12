@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
 import ru.skypro.ads.entity.Role;
@@ -25,7 +26,6 @@ public class AdsServiceImpl implements AdsService {
     private final UserRepository userRepository;
     private final AdsMapper adsMapper;
 
-    private int id=0;
 
     public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper) {
         this.adsRepository = adsRepository;
@@ -41,6 +41,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public ResponseWrapperAdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
+        System.out.println(adsList);
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -54,7 +55,6 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile image) {
         Ads saveAds = adsMapper.adsDtoToAds(ads);
-        saveAds.setId(++id);
         saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
         saveAds.setImage(image.getName()); // Todo продумать работу с image
         adsRepository.save(saveAds);
@@ -68,9 +68,10 @@ public class AdsServiceImpl implements AdsService {
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto getAd(Integer id) {
+    public FullAdsDto getAd(Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        return adsMapper.adsToAdsDto(ads);
+        System.out.println(ads);
+        return adsMapper.toFullAdsDto(ads);
     }
 
     /**
@@ -85,6 +86,9 @@ public class AdsServiceImpl implements AdsService {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         if (user.getRole().equals(Role.ADMIN) || user.equals(ads.getUser())) {
             adsRepository.deleteById(id);
+           /*или  мягкое удаление:
+            ads.setDeleted(true);
+            adsRepository.save(ads);*/
             return true;
         }
         return false;
@@ -119,6 +123,7 @@ public class AdsServiceImpl implements AdsService {
         String username = authentication.getName();
         User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
         List<Ads> adsList = adsRepository.findAllByUser(user);
+        System.out.println("Где ошибка то???");
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -132,6 +137,11 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public boolean updateImage(int id, MultipartFile image) {
         return true;
+    }
+    @Override
+    public boolean isThisUser(String email, int id){
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        return email.equals(ads.getUser().getEmail());
     }
 
 }
