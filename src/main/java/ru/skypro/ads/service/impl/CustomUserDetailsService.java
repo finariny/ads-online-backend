@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    int id =0;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,9 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (userRepository.findUserByEmail(registerReq.getUsername()).isPresent()) {
             throw new IncorrectUsernameException();
         }
-        ++id;
         User user = new User();
-        user.setId(id);
         user.setEmail(registerReq.getUsername());
         user.setPassword(passwordEncoder.encode(registerReq.getPassword()));
         user.setRole(Role.USER);
