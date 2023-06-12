@@ -8,7 +8,6 @@ import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
-import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -81,17 +80,11 @@ public class AdsServiceImpl implements AdsService {
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean removeAd(String email, int id) {
-        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
-        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        if (user.getRole().equals(Role.ADMIN) || user.equals(ads.getUser())) {
-            adsRepository.deleteById(id);
+    public void removeAd(int id) {
+        adsRepository.deleteById(id);
            /*или  мягкое удаление:
             ads.setDeleted(true);
             adsRepository.save(ads);*/
-            return true;
-        }
-        return false;
     }
 
     /**

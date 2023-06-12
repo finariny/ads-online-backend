@@ -39,7 +39,8 @@ public interface AdsService {
      * @param id идентификатор объявления
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
-    boolean removeAd(String name, int id);
+
+    void removeAd(int id);
 
     /**
      * Обновляет информацию об объявлении

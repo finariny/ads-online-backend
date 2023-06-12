@@ -95,10 +95,8 @@ public class AdsController {
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (adsService.removeAd(authentication.getName(), id)) {
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        adsService.removeAd(id);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}")
