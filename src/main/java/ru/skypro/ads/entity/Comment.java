@@ -43,7 +43,7 @@ public class Comment {
     /**
      * для мягкого удаления
      */
-    private boolean deleted;
+//    private boolean deleted;
 
     @Override
     public boolean equals(Object o) {

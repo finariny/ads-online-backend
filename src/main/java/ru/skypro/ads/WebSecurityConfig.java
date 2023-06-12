@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                                     .mvcMatchers("/ads/**", "/users/**")
                                     .authenticated()
                                     .anyRequest()
+                                    .authenticated()
             )
             .cors()
             .and()

@@ -43,7 +43,7 @@ public class User {
     /**
      * для мягкого удаления
      */
-    private boolean deleted;
+//    private boolean deleted;
 
 
 //    @OneToOne(cascade = CascadeType.ALL)
