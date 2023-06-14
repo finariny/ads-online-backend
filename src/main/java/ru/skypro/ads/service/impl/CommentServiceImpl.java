@@ -14,24 +14,24 @@ import ru.skypro.ads.service.CommentService;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class CommentServiceImpl implements CommentService {
 
     private CommentRepository commentRepository;
     private AdsRepository adsRepository;
+    private CommentMapper commentMapper;
 
-
-    public CommentServiceImpl(CommentRepository commentRepository, AdsRepository adsRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
+        this.commentMapper = commentMapper;
     }
 
     @Override
     public ResponseWrapperCommentDto getComments(int id) {
         if (adsRepository.findById(id).isPresent()) {
             Ads ads = adsRepository.findById(id).get();
-            return CommentMapper.INSTANCE.listCommentToCommentDto(ads.getAdsCommentList().size(), ads.getAdsCommentList());
+            return commentMapper.listCommentToCommentDto(ads.getAdsCommentList().size(), ads.getAdsCommentList());
         }
         return null;
     }
@@ -41,11 +41,11 @@ public class CommentServiceImpl implements CommentService {
         Optional<Ads> ads = adsRepository.findById(id);
         if (ads.isPresent()) {
             Comment comment = new Comment();
-            CommentMapper.INSTANCE.updateCommentFromCommentDto(text, comment);
+            commentMapper.updateCommentFromCommentDto(text, comment);
             List<Comment> adsCommentList = ads.get().getAdsCommentList();
             adsCommentList.add(comment);
             Comment save = commentRepository.save(comment);
-            return CommentMapper.INSTANCE.commentToCommentDto(save);
+            return commentMapper.commentToCommentDto(save);
         }
         return null;
     }
@@ -68,9 +68,9 @@ public class CommentServiceImpl implements CommentService {
         if (ads.isPresent()) {
             if (commentRepository.findById(commentId).isPresent()) {
                 Comment comment = commentRepository.findById(commentId).get();
-                CommentMapper.INSTANCE.updateCommentFromCommentDto(commentDto, comment);
+                commentMapper.updateCommentFromCommentDto(commentDto, comment);
                 Comment save = commentRepository.save(comment);
-                return CommentMapper.INSTANCE.commentToCommentDto(save);
+                return commentMapper.commentToCommentDto(save);
             }
         }
         return null;

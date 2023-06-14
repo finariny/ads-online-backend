@@ -1,8 +1,7 @@
 package ru.skypro.ads.entity;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,14 +11,13 @@ import java.util.Objects;
  * Сущность пользователя
  */
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Table(name = "USER_")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Integer id;
 
     @Email
@@ -41,6 +39,9 @@ public class User {
     @Column(name = "ROLE")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private ImageForExample avatar;
 
     @Override
     public boolean equals(Object o) {

@@ -16,40 +16,50 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
   private static final String[] AUTH_WHITELIST = {
-    "/swagger-resources/**",
-    "/swagger-ui.html",
-    "/v3/api-docs",
-    "/webjars/**",
-    "/login",
-    "/register"
+          "/swagger-resources/**",
+          "/swagger-ui.html",
+          "/v3/api-docs",
+          "/webjars/**",
+          "/login",
+          "/register",
+          "/ads",
+          "/ads/*",
+          "/ads/me*",
+          "/ads/me",
+          "/ads/image/**",
+          "/ads/*/comments"
   };
 
-  @Bean
-  public InMemoryUserDetailsManager userDetailsService() {
-    UserDetails user =
-        User.builder()
-            .username("user@gmail.com")
-            .password("password")
-            .passwordEncoder((plainText) -> passwordEncoder().encode(plainText))
-            .roles("USER")
-            .build();
-    return new InMemoryUserDetailsManager(user);
-  }
+//  @Bean
+//  public InMemoryUserDetailsManager userDetailsService() {
+//    UserDetails user =
+//        User.builder()
+//            .username("user@gmail.com")
+//            .password("password")
+//            .passwordEncoder((plainText) -> passwordEncoder().encode(plainText))
+//            .roles("USER")
+//            .build();
+//    return new InMemoryUserDetailsManager(user);
+//  }
+
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf()
-        .disable()
-        .authorizeHttpRequests(
-            (authorization) ->
-                authorization
-                    .mvcMatchers(AUTH_WHITELIST)
-                    .permitAll())
-//                    .mvcMatchers("/ads/**", "/users/**")
-//                    .authenticated())
-        .cors()
-        .and()
-        .httpBasic(withDefaults());
+            .disable()
+            .authorizeHttpRequests(
+                    (authorization) ->
+                            authorization
+                                    .mvcMatchers(AUTH_WHITELIST)
+                                    .permitAll()
+                                    .mvcMatchers("/ads/**", "/users/**")
+                                    .authenticated()
+                                    .anyRequest()
+                                    .authenticated()
+            )
+            .cors()
+            .and()
+            .httpBasic(withDefaults());
     return http.build();
   }
 

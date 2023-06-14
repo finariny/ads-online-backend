@@ -7,6 +7,7 @@ import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -22,10 +23,12 @@ public class AdsServiceImpl implements AdsService {
 
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
+    private final AdsMapper adsMapper;
 
-    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository) {
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper) {
         this.adsRepository = adsRepository;
         this.userRepository = userRepository;
+        this.adsMapper = adsMapper;
     }
 
     /**
@@ -36,7 +39,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public ResponseWrapperAdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
-        return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
+        return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
@@ -47,11 +50,12 @@ public class AdsServiceImpl implements AdsService {
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto saveAd(CreateAdsDto ads, MultipartFile image) {
-        Ads saveAds = AdsMapper.INSTANCE.adsDtoToAds(ads);
+    public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile image) {
+        Ads saveAds = adsMapper.adsDtoToAds(ads);
+        saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
         saveAds.setImage(image.getName()); // Todo продумать работу с image
         adsRepository.save(saveAds);
-        return AdsMapper.INSTANCE.adsToAdsDto(saveAds);
+        return adsMapper.adsToAdsDto(saveAds);
     }
 
     /**
@@ -63,7 +67,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsDto getAd(Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        return AdsMapper.INSTANCE.adsToAdsDto(ads);
+        return adsMapper.adsToAdsDto(ads);
     }
 
     /**
@@ -73,8 +77,10 @@ public class AdsServiceImpl implements AdsService {
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean removeAd(int id) {
-        if (adsRepository.existsById(id)) {
+    public boolean removeAd(String email, int id) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        if (user.getRole().equals(Role.ADMIN) || user.equals(ads.getUser())) {
             adsRepository.deleteById(id);
             return true;
         }
@@ -92,9 +98,9 @@ public class AdsServiceImpl implements AdsService {
     public AdsDto updateAds(int id, CreateAdsDto createAdsDto) {
         if (adsRepository.findById(id).isPresent()) {
             Ads ads = adsRepository.findById(id).get();
-            AdsMapper.INSTANCE.updateAdsFromCreateAdsDto(createAdsDto, ads);
+            adsMapper.updateAdsFromCreateAdsDto(createAdsDto, ads);
             adsRepository.save(ads);
-            return AdsMapper.INSTANCE.adsToAdsDto(ads);
+            return adsMapper.adsToAdsDto(ads);
         }
         return null;
     }
@@ -107,12 +113,10 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
-        User user = userRepository.getUserByEmail(authentication.getName());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        List<Ads> adsList = adsRepository.findByUser(user);
-        return AdsMapper.INSTANCE.listAdsToAdsDto(adsList.size(), adsList);
+        String username = authentication.getName();
+        User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
+        List<Ads> adsList = adsRepository.findAllByUser(user);
+        return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
@@ -120,7 +124,7 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id    идентификатор объявления
      * @param image новая картинка
-     * @return добавленная картинка
+     * @return <code>true</code> если картинка обновлена, <code>false</code> в случае неудачи
      */
     @Override
     public boolean updateImage(int id, MultipartFile image) {

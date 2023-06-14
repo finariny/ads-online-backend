@@ -22,7 +22,7 @@ public interface AdsService {
      * @param image объект {@link MultipartFile}
      * @return объект {@link AdsDto}
      */
-    AdsDto saveAd(CreateAdsDto ad, MultipartFile image);
+    AdsDto saveAd(CreateAdsDto ad, String name, MultipartFile image);
 
     /**
      * Получает информацию об объявлении
@@ -38,7 +38,7 @@ public interface AdsService {
      * @param id идентификатор объявления
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
-    boolean removeAd(int id);
+    boolean removeAd(String name, int id);
 
     /**
      * Обновляет информацию об объявлении
