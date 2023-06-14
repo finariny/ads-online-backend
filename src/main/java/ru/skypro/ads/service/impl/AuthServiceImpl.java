@@ -1,5 +1,6 @@
 package ru.skypro.ads.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import ru.skypro.ads.dto.RegisterReqDto;
 import ru.skypro.ads.exception.IncorrectArgumentRegException;
 import ru.skypro.ads.service.AuthService;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -34,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
             || registerReq.getPhone() == null || registerReq.getPhone().isBlank()
             || registerReq.getPassword() == null || registerReq.getPassword().isBlank()) throw new IncorrectArgumentRegException();
 
-    System.out.println("Зарегистрирован новый пользователь: "+ registerReq.getUsername());
+    log.info("Зарегистрирован новый пользователь: "+ registerReq.getUsername());
     manager.createUser(registerReq);
     return true;
   }

@@ -11,6 +11,8 @@ import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.repository.CommentRepository;
 import ru.skypro.ads.service.CommentService;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     private AdsRepository adsRepository;
     private CommentMapper commentMapper;
+    private int idComment =0;
 
     public CommentServiceImpl(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper) {
         this.commentRepository = commentRepository;
@@ -41,6 +44,8 @@ public class CommentServiceImpl implements CommentService {
         Optional<Ads> ads = adsRepository.findById(id);
         if (ads.isPresent()) {
             Comment comment = new Comment();
+            comment.setId(++idComment);
+            comment.setCreatedAt(LocalDateTime.now());
             commentMapper.updateCommentFromCommentDto(text, comment);
             List<Comment> adsCommentList = ads.get().getAdsCommentList();
             adsCommentList.add(comment);

@@ -16,7 +16,7 @@ import java.util.Objects;
 @Table(name = "USER_")
 public class User {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
 
@@ -39,6 +39,12 @@ public class User {
     @Column(name = "ROLE")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    /**
+     * для мягкого удаления
+     */
+//    private boolean deleted;
+
 
 //    @OneToOne(cascade = CascadeType.ALL)
 //    private ImageForExample avatar;
