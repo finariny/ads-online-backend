@@ -1,1 +1,1 @@
-FROM ghcr.io/bizinmitya/front-react-avito:local
+FROM ghcr.io/bizinmitya/front-react-avito:latest
