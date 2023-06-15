@@ -16,10 +16,10 @@ public interface PermissionService {
     /**
      * Проверяет, является ли пользователь администратором
      *
-     * @param user пользователь
+     * @param email e-mail администратора
      * @return <code>true</code> если пользователь является администратором, <code>false</code> в случае неудачи
      */
-    boolean isAdmin(User user);
+    boolean isAdmin(String email);
 
     /**
      * Проверяет, является ли пользователь владельцем объявления / комментария или администратором
