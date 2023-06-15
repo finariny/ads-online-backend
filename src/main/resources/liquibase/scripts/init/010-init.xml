@@ -8,7 +8,7 @@
 
     <changeSet id="1" author="ads">
         <createTable tableName="ADS">
-            <column name="ID" type="INT">
+            <column autoIncrement="true" name="ID" startWith="1" type="INT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ADS"/>
             </column>
             <column name="PRICE" type="INT"/>
@@ -21,7 +21,7 @@
 
     <changeSet id="2" author="ads">
         <createTable tableName="COMMENT_">
-            <column name="ID" type="INT">
+            <column autoIncrement="true" name="ID" startWith="1" type="INT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_COMMENT_"/>
             </column>
             <column name="CREATED_AT" type="DATETIME"/>
@@ -33,7 +33,7 @@
 
     <changeSet id="3" author="ads">
         <createTable tableName="USER_">
-            <column name="ID" type="INT">
+            <column autoIncrement="true" name="ID" startWith="1" type="INT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_USER_"/>
             </column>
             <column name="EMAIL" type="VARCHAR(255)"/>
