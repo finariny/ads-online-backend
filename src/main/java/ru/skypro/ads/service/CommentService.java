@@ -1,5 +1,6 @@
 package ru.skypro.ads.service;
 
+import org.springframework.security.core.Authentication;
 import ru.skypro.ads.dto.CommentDto;
 import ru.skypro.ads.dto.CreateCommentDto;
 import ru.skypro.ads.dto.ResponseWrapperCommentDto;
@@ -31,7 +32,7 @@ public interface CommentService {
      * @param commentId идентификатор комментария
      * @return возвращает статус удаленного элемента
      */
-    boolean deleteComment(int adId, int commentId);
+    boolean deleteComment(int adId, int commentId, Authentication authentication);
 
     /**
      * Написать ошибку 403, указывает на комментарий, который нельзя удалить
@@ -41,6 +42,5 @@ public interface CommentService {
      * @param commentId идентификатор комментария
      * @return возвращает обновленный комментарий
      */
-    CommentDto updateComment(Integer adId, Integer commentId, CommentDto commentDto);
-
+    CommentDto updateComment(Integer adId, Integer commentId, CommentDto commentDto, Authentication authentication);
 }
