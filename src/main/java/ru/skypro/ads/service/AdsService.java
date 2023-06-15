@@ -6,6 +6,7 @@ import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
+import ru.skypro.ads.entity.User;
 
 public interface AdsService {
 
@@ -40,7 +41,8 @@ public interface AdsService {
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
 
-    void removeAd(int id);
+
+    boolean removeAd(String email, int id);
 
     /**
      * Обновляет информацию об объявлении
@@ -49,7 +51,7 @@ public interface AdsService {
      * @param createAdsDto новая информация об объявлении
      * @return объект {@link AdsDto}
      */
-    AdsDto updateAds(int id, CreateAdsDto createAdsDto);
+    AdsDto updateAds(int id, CreateAdsDto createAdsDto, String email);
 
     /**
      * Возвращает объявления авторизованного пользователя
@@ -68,5 +70,5 @@ public interface AdsService {
      */
     boolean updateImage(int id, MultipartFile image);
 
-    boolean isThisUser(String email, int id);
+    boolean isThisUser(String email, User ownerAds);
 }

@@ -47,6 +47,7 @@ public interface AdsMapper {
      * @param ads          объект {@link Ads}
      */
     void updateAdsFromCreateAdsDto(CreateAdsDto createAdsDto, @MappingTarget Ads ads);
+    //Вопрос по этому методу? Он не возвращает.
 
     /**
      * Сопоставляет список объектов {@link Ads} и их количество в объект {@link ResponseWrapperAdsDto}
