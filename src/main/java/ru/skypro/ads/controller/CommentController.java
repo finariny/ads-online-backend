@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.ads.dto.CommentDto;
 import ru.skypro.ads.dto.CreateCommentDto;
@@ -22,7 +23,6 @@ import ru.skypro.ads.service.CommentService;
 @RequiredArgsConstructor
 @Tag(name = "Комментарии")
 public class CommentController {
-
 
     private final CommentService commentService;
 
@@ -64,11 +64,11 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
-    public ResponseEntity<Void> deleteComment(@PathVariable int adId, @PathVariable int commentId) {
+    public ResponseEntity<Void> deleteComment(@PathVariable int adId, @PathVariable int commentId, Authentication authentication) {
         if (adId <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (commentService.deleteComment(adId, commentId)) {
+        if (commentService.deleteComment(adId, commentId, authentication)) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -82,11 +82,11 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
-    public ResponseEntity<CommentDto> updateComment(@PathVariable int adId, @PathVariable int commentId, @RequestBody CommentDto commentDto) {
+    public ResponseEntity<CommentDto> updateComment(@PathVariable int adId, @PathVariable int commentId, @RequestBody CommentDto commentDto, Authentication authentication) {
         if (adId <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        CommentDto commentDto1 = commentService.updateComment(adId, commentId, commentDto);
+        CommentDto commentDto1 = commentService.updateComment(adId, commentId, commentDto, authentication);
         if (commentDto1 != null) {
             return ResponseEntity.ok(commentDto1);
         }
