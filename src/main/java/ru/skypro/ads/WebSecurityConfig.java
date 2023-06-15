@@ -17,14 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-  private static final String[] AUTH_WHITELIST = {
-          "/swagger-resources/**",
-          "/swagger-ui.html",
-          "/v3/api-docs",
-          "/webjars/**",
-          "/login",
-          "/register"
-  };
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v3/api-docs",
+            "/webjars/**",
+            "/login",
+            "/register"
+    };
 
 //  @Bean
 //  public InMemoryUserDetailsManager userDetailsService() {
@@ -39,28 +39,25 @@ public class WebSecurityConfig {
 //  }
 
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf()
-            .disable()
-            .authorizeHttpRequests(
-                    (authorization) ->
-                            authorization
-                                    .mvcMatchers(AUTH_WHITELIST)
-                                    .permitAll()
-                                    .mvcMatchers("/ads/", "/users/")
-                                    .authenticated()
-                                    .anyRequest()
-                                    .authenticated()
-            )
-            .cors()
-            .and()
-            .httpBasic(withDefaults());
-    return http.build();
-  }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable()
+                .authorizeHttpRequests(
+                        (authorization) ->
+                                authorization
+                                        .mvcMatchers(AUTH_WHITELIST)
+                                        .permitAll()
+                                        .mvcMatchers("/ads/**", "/users/**")
+                                        .authenticated())
+                .cors()
+                .disable()
+                .httpBasic(withDefaults());
+        return http.build();
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

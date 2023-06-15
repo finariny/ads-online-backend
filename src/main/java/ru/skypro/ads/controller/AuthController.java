@@ -2,7 +2,7 @@ package ru.skypro.ads.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,7 +16,7 @@ import ru.skypro.ads.service.AuthService;
 
 import static ru.skypro.ads.dto.RoleDto.USER;
 
-@Slf4j
+@Log4j2
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
@@ -27,9 +27,9 @@ public class AuthController {
     @Tag(name = "Регистрация")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReqDto registerReqDto) {
-        System.out.println("Нажат контроллер /register");
+        log.info("Нажат контроллер /register");
 //        RoleDto roleDto = registerReqDto.getRoleDto() == null ? USER : registerReqDto.getRoleDto();
-        System.out.println("RoleDTO = "+registerReqDto.getUsername());
+        log.info("RoleDTO = " + registerReqDto.getUsername());
         if (authService.register(registerReqDto)) {
             return ResponseEntity.ok().build();
         } else {
@@ -40,9 +40,9 @@ public class AuthController {
     @Tag(name = "Авторизация")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReqDto req) {
-        System.out.println("Нажали контроллер Авторизация!");
+        log.info("Нажали контроллер Авторизация!");
         if (authService.login(req.getUsername(), req.getPassword())) {
-            System.out.println("ввели логин: "+req.getUsername());
+            log.info("ввели логин: " + req.getUsername());
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

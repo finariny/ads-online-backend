@@ -30,8 +30,8 @@ public class CommentController {
     @PostMapping(value = "/{id}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Добавить комментарий к объявлению")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401"),
     })
     public ResponseEntity<CommentDto> addComment(@PathVariable int id, @RequestBody CreateCommentDto text) {
         CommentDto addCommentDto = commentService.addComment(id, text);
@@ -45,51 +45,50 @@ public class CommentController {
     @GetMapping(value = "/{id}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Получить комментарии объявления")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401")
     })
     public ResponseEntity<ResponseWrapperCommentDto> getComment(@PathVariable int id) {
         ResponseWrapperCommentDto comment = commentService.getComments(id);
-        if (comment == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (comment != null) {
+            return ResponseEntity.ok(comment);
         }
-        return ResponseEntity.ok(comment);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
 
     @DeleteMapping("/{adId}/comments/{commentId}")
     @Operation(summary = "Удалить комментарий")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401"),
+            @ApiResponse(responseCode = "403")
     })
-    public ResponseEntity<Void> deleteComment(@PathVariable int adId, @PathVariable int commentId, Authentication authentication) {
-        if (adId <= 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<Void> deleteComment(@PathVariable int adId,
+                                              @PathVariable int commentId,
+                                              Authentication authentication) {
         if (commentService.deleteComment(adId, commentId, authentication)) {
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 
     @PatchMapping(value = "/{adId}/comments/{commentId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Обновить комментарий")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401"),
+            @ApiResponse(responseCode = "403")
     })
-    public ResponseEntity<CommentDto> updateComment(@PathVariable int adId, @PathVariable int commentId, @RequestBody CommentDto commentDto, Authentication authentication) {
-        if (adId <= 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<CommentDto> updateComment(@PathVariable int adId,
+                                                    @PathVariable int commentId,
+                                                    @RequestBody CommentDto commentDto,
+                                                    Authentication authentication) {
         CommentDto commentDto1 = commentService.updateComment(adId, commentId, commentDto, authentication);
         if (commentDto1 != null) {
             return ResponseEntity.ok(commentDto1);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

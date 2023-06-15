@@ -24,8 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> optionalUser = userRepository.getUserByEmailIgnoreCase(username);
@@ -53,5 +51,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info(String.valueOf(user));
         userRepository.save(user);
     }
-
 }
