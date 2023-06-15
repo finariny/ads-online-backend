@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,14 +89,11 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-//    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ADMIN')")
     public ResponseEntity<Void> removeAd(Authentication authentication, @PathVariable int id) {
-
-        if (id <= 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if (adsService.removeAd(authentication.getName(), id)) {
+            return ResponseEntity.ok().build();
         }
-        adsService.removeAd(authentication.getName(),id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PatchMapping("/{id}")
@@ -110,7 +106,6 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-//    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdsDto> updateAds(@NotNull Authentication authentication, @PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
         AdsDto adsDto = adsService.updateAds(id, createAdsDto, authentication.getName());
         if (adsDto != null) {
@@ -125,8 +120,7 @@ public class AdsController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(
                                     implementation = ResponseWrapperAdsDto.class)))),
-            @ApiResponse(responseCode = "401",
-                    description = "Unauthorized")
+            @ApiResponse(responseCode = "401")
     })
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
@@ -140,21 +134,19 @@ public class AdsController {
         }
     }
 
-
     @Operation(summary = "Обновить картинку объявления")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
                             array = @ArraySchema(schema = @Schema(
                                     implementation = String.class)))),
-            @ApiResponse(responseCode = "401",
-                    description = "Unauthorized"),
-            @ApiResponse(responseCode = "403",
-                    description = "Forbidden")
+            @ApiResponse(responseCode = "401"),
+            @ApiResponse(responseCode = "403")
     })
 
     @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateImage(@NotNull Authentication authentication, @PathVariable("id") int id,
+    public ResponseEntity<?> updateImage(Authentication authentication,
+                                         @PathVariable("id") int id,
                                          @RequestPart(value = "image") @Valid MultipartFile image
     ) {
         if (adsService.updateImage(id, image)) {
@@ -163,5 +155,4 @@ public class AdsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
 }

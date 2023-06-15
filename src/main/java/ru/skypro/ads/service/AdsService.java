@@ -6,7 +6,6 @@ import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
-import ru.skypro.ads.entity.User;
 
 public interface AdsService {
 
@@ -21,10 +20,11 @@ public interface AdsService {
      * Добавляет объявление
      *
      * @param ad    объект {@link CreateAdsDto}
+     * @param email e-mail пользователя
      * @param image объект {@link MultipartFile}
      * @return объект {@link AdsDto}
      */
-    AdsDto saveAd(CreateAdsDto ad, String name, MultipartFile image);
+    AdsDto saveAd(CreateAdsDto ad, String email, MultipartFile image);
 
     /**
      * Получает информацию об объявлении
@@ -37,11 +37,10 @@ public interface AdsService {
     /**
      * Удаляет объявление
      *
-     * @param id идентификатор объявления
+     * @param email e-mail пользователя
+     * @param id    идентификатор объявления
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
-
-
     boolean removeAd(String email, int id);
 
     /**
@@ -49,6 +48,7 @@ public interface AdsService {
      *
      * @param id           идентификатор объявления
      * @param createAdsDto новая информация об объявлении
+     * @param email        e-mail пользователя
      * @return объект {@link AdsDto}
      */
     AdsDto updateAds(int id, CreateAdsDto createAdsDto, String email);
@@ -69,6 +69,4 @@ public interface AdsService {
      * @return добавленная картинка
      */
     boolean updateImage(int id, MultipartFile image);
-
-    boolean isThisUser(String email, User ownerAds);
 }

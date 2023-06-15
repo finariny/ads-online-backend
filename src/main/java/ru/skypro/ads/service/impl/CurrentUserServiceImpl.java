@@ -60,7 +60,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        log.info("Запрошенная информация: "+ userMapper.userToUserDto(user));
+        log.info("Запрошенная информация: " + userMapper.userToUserDto(user));
         return userMapper.userToUserDto(user);
     }
 
@@ -76,13 +76,13 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User authenticatedUser = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        if(userDto.getFirstName()!=null&&!userDto.getFirstName().isBlank()){
+        if (userDto.getFirstName() != null && !userDto.getFirstName().isBlank()) {
             authenticatedUser.setFirstName(userDto.getFirstName());
         }
-        if(userDto.getLastName()!=null&&!userDto.getLastName().isBlank()){
+        if (userDto.getLastName() != null && !userDto.getLastName().isBlank()) {
             authenticatedUser.setLastName(userDto.getLastName());
         }
-        if(userDto.getPhone()!=null&&!userDto.getPhone().isBlank()){
+        if (userDto.getPhone() != null && !userDto.getPhone().isBlank()) {
             authenticatedUser.setPhone(userDto.getPhone());
         }
         log.info(authenticatedUser);
@@ -94,7 +94,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      * Импортирует изображение для аватарки зарегистрированном пользователя
      *
      * @param image          объект {@link MultipartFile}
-     * @param authentication
+     * @param authentication {@link Authentication}
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
     @Override

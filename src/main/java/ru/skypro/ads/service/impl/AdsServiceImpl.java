@@ -9,7 +9,6 @@ import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
-import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -17,6 +16,7 @@ import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
+import ru.skypro.ads.service.PermissionService;
 
 import java.util.List;
 
@@ -27,12 +27,14 @@ public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
     private final AdsMapper adsMapper;
+    private final PermissionService permissionService;
 
 
-    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper) {
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper, PermissionService permissionService) {
         this.adsRepository = adsRepository;
         this.userRepository = userRepository;
         this.adsMapper = adsMapper;
+        this.permissionService = permissionService;
     }
 
     /**
@@ -51,6 +53,7 @@ public class AdsServiceImpl implements AdsService {
      * Добавляет объявление
      *
      * @param ads   объект {@link AdsDto}
+     * @param email e-mail пользователя
      * @param image объект {@link MultipartFile}
      * @return объект {@link AdsDto}
      */
@@ -79,14 +82,15 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Удаляет объявление
      *
-     * @param id идентификатор объявления
+     * @param email e-mail пользователя
+     * @param id    идентификатор объявления
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
     public boolean removeAd(String email, int id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        User ownerAds = ads.getUser();
-        if (isThisUser(email, ownerAds)) {
+        User adOwner = ads.getUser();
+        if (permissionService.isThisUserOrAdmin(email, adOwner)) {
             adsRepository.deleteById(id);
             return true;
         }
@@ -98,14 +102,15 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id           идентификатор объявления
      * @param createAdsDto новая информация об объявлении
+     * @param email        e-mail пользователя
      * @return объект {@link AdsDto}
      */
     @Override
     public AdsDto updateAds(int id, CreateAdsDto createAdsDto, String email) {
         if (adsRepository.findById(id).isPresent()) {
             Ads ads = adsRepository.findById(id).get();
-            User ownerAds = ads.getUser();
-            if (isThisUser(email, ownerAds)) {
+            User adOwner = ads.getUser();
+            if (permissionService.isThisUserOrAdmin(email, adOwner)) {
                 log.info("запустился метод updateAds.");
                 adsMapper.updateAdsFromCreateAdsDto(createAdsDto, ads);
                 adsRepository.save(ads);
@@ -140,17 +145,4 @@ public class AdsServiceImpl implements AdsService {
     public boolean updateImage(int id, MultipartFile image) {
         return true;
     }
-
-    @Override
-    public boolean isThisUser(String email, User ownerAds) {
-        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
-        if (user.getRole() == (Role.ADMIN) || email.equals(ownerAds.getEmail())) {
-            log.info("- Пройдена!");
-            return true;
-        } else {
-            log.info("- Не пройдена!");
-            return false;
-        }
-    }
-
 }

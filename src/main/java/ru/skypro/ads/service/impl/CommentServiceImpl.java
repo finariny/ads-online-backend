@@ -16,24 +16,28 @@ import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.repository.CommentRepository;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.CommentService;
+import ru.skypro.ads.service.PermissionService;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    private CommentRepository commentRepository;
-    private AdsRepository adsRepository;
-    private CommentMapper commentMapper;
-    private UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final AdsRepository adsRepository;
+    private final CommentMapper commentMapper;
+    private final UserRepository userRepository;
+    private final PermissionService permissionService;
 
     private int idComment = 0;
 
-    public CommentServiceImpl(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserRepository userRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserRepository userRepository, PermissionService permissionService) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
         this.commentMapper = commentMapper;
         this.userRepository = userRepository;
+        this.permissionService = permissionService;
     }
 
     @Override
@@ -61,13 +65,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public boolean deleteComment(int adId, int commentId, Authentication authentication) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
-        User user = userRepository
-                .findUserByEmail(SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getName())
-                .orElseThrow();
-        if (comment.getUser().getEmail().equals(user.getEmail()) || user.getRole().getAuthority().equals("ADMIN")) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+        User commentOwner = comment.getUser();
+        if (permissionService.isThisUserOrAdmin(authentication.getName(), commentOwner)) {
             if (comment.getAds().getId() != adId) {
                 throw new AdsNotFoundException();
             }
@@ -81,18 +82,16 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto updateComment(Integer adId, Integer commentId, CommentDto commentDto, Authentication authentication) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
-        User user = userRepository.findUserByEmail(authentication.getName()).orElseThrow();
-        if (comment.getUser().getEmail().equals(user.getEmail()) || user.getRole().getAuthority().equals("ADMIN")) {
+        User commentOwner = comment.getUser();
+        if (permissionService.isThisUserOrAdmin(authentication.getName(), commentOwner)) {
             if (comment.getAds().getId() != adId) {
                 throw new AdsNotFoundException();
             }
             comment.setText(commentDto.getText());
             commentRepository.save(comment);
+            adsRepository.save(comment.getAds());
             return commentMapper.commentToCommentDto(comment);
         }
         return commentDto;
     }
-
 }
-
-
