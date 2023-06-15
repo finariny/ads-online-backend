@@ -90,12 +90,13 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> removeAd(@NotNull Authentication authentication, @PathVariable int id) {
+//    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ADMIN')")
+    public ResponseEntity<Void> removeAd(Authentication authentication, @PathVariable int id) {
+
         if (id <= 0) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        adsService.removeAd(id);
+        adsService.removeAd(authentication.getName(),id);
         return ResponseEntity.ok().build();
     }
 
@@ -109,16 +110,13 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,id) or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdsDto> updateAds(@NotNull Authentication authentication, @PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
-        log.info("Сравнения Пользователя: "+ adsService.isThisUser(authentication.getName(),id));
-        if (id <= 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        AdsDto adsDto = adsService.updateAds(id, createAdsDto, authentication.getName());
+        if (adsDto != null) {
+            return ResponseEntity.ok(adsDto);
         }
-        if (adsService.updateAds(id, createAdsDto) != null) {
-            return ResponseEntity.ok(adsService.updateAds(id, createAdsDto));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(summary = "Получить объявления авторизованного пользователя")
@@ -156,7 +154,6 @@ public class AdsController {
     })
 
     @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @PreAuthorize("@adsServiceImpl.isThisUser(authentication.name,#id) or hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateImage(@NotNull Authentication authentication, @PathVariable("id") int id,
                                          @RequestPart(value = "image") @Valid MultipartFile image
     ) {

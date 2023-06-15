@@ -9,6 +9,7 @@ import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -82,11 +83,14 @@ public class AdsServiceImpl implements AdsService {
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
-    public void removeAd(int id) {
-        adsRepository.deleteById(id);
-           /*или  мягкое удаление:
-            ads.setDeleted(true);
-            adsRepository.save(ads);*/
+    public boolean removeAd(String email, int id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        User ownerAds = ads.getUser();
+        if (isThisUser(email, ownerAds)) {
+            adsRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -97,12 +101,16 @@ public class AdsServiceImpl implements AdsService {
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto updateAds(int id, CreateAdsDto createAdsDto) {
+    public AdsDto updateAds(int id, CreateAdsDto createAdsDto, String email) {
         if (adsRepository.findById(id).isPresent()) {
             Ads ads = adsRepository.findById(id).get();
-            adsMapper.updateAdsFromCreateAdsDto(createAdsDto, ads);
-            adsRepository.save(ads);
-            return adsMapper.adsToAdsDto(ads);
+            User ownerAds = ads.getUser();
+            if (isThisUser(email, ownerAds)) {
+                log.info("запустился метод updateAds.");
+                adsMapper.updateAdsFromCreateAdsDto(createAdsDto, ads);
+                adsRepository.save(ads);
+                return adsMapper.adsToAdsDto(ads);
+            }
         }
         return null;
     }
@@ -118,7 +126,6 @@ public class AdsServiceImpl implements AdsService {
         String username = authentication.getName();
         User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
         List<Ads> adsList = adsRepository.findAllByUser(user);
-        log.info("Где ошибка то???");
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -133,10 +140,17 @@ public class AdsServiceImpl implements AdsService {
     public boolean updateImage(int id, MultipartFile image) {
         return true;
     }
+
     @Override
-    public boolean isThisUser(String email, int id){
-        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        return email.equals(ads.getUser().getEmail());
+    public boolean isThisUser(String email, User ownerAds) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
+        if (user.getRole() == (Role.ADMIN) || email.equals(ownerAds.getEmail())) {
+            log.info("- Пройдена!");
+            return true;
+        } else {
+            log.info("- Не пройдена!");
+            return false;
+        }
     }
 
 }

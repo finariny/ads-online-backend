@@ -57,7 +57,6 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public UserDto getUser(Authentication authentication) {
-        log.info("печатаю это до взаимодействия с БД");
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
