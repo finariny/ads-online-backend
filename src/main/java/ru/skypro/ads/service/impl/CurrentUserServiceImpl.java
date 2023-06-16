@@ -31,7 +31,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public boolean setPassword(NewPasswordDto newPasswordDto, Authentication authentication) {
-        System.out.println("Внутри метода SetPassword");
+        log.info("Внутри метода SetPassword");
         try {
             User user = userRepository
                     .findUserByEmail(authentication.getName())
@@ -40,7 +40,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
                 throw new RuntimeException("Не совпадают пароли");
             }
             user.setPassword(newPasswordDto.getNewPassword());
-            System.out.println("newPasswordDto.getNewPassword()");
+            log.info("newPasswordDto.getNewPassword()");
             userRepository.save(user);
         } catch (Exception e) {
             log.warn("Не удалось изменить пароль: " + e.getMessage());
@@ -57,11 +57,10 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      */
     @Override
     public UserDto getUser(Authentication authentication) {
-        System.out.println("печатаю это до взаимодействия с БД");
         User user = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        System.out.println("Запрошенная информация: "+ userMapper.userToUserDto(user));
+        log.info("Запрошенная информация: " + userMapper.userToUserDto(user));
         return userMapper.userToUserDto(user);
     }
 
@@ -77,17 +76,16 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         User authenticatedUser = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        if(userDto.getFirstName()!=null&&!userDto.getFirstName().isBlank()){
+        if (userDto.getFirstName() != null && !userDto.getFirstName().isBlank()) {
             authenticatedUser.setFirstName(userDto.getFirstName());
         }
-        if(userDto.getLastName()!=null&&!userDto.getLastName().isBlank()){
+        if (userDto.getLastName() != null && !userDto.getLastName().isBlank()) {
             authenticatedUser.setLastName(userDto.getLastName());
         }
-        if(userDto.getPhone()!=null&&!userDto.getPhone().isBlank()){
+        if (userDto.getPhone() != null && !userDto.getPhone().isBlank()) {
             authenticatedUser.setPhone(userDto.getPhone());
         }
-        System.out.println();
-        System.out.println(authenticatedUser);
+        log.info(authenticatedUser);
         return userMapper.userToUserDto(userRepository.save(authenticatedUser));
 
     }
@@ -96,7 +94,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
      * Импортирует изображение для аватарки зарегистрированном пользователя
      *
      * @param image          объект {@link MultipartFile}
-     * @param authentication
+     * @param authentication {@link Authentication}
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
     @Override

@@ -1,6 +1,7 @@
 package ru.skypro.ads.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,14 +16,13 @@ import ru.skypro.ads.repository.UserRepository;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    int id =0;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,18 +40,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (userRepository.findUserByEmail(registerReq.getUsername()).isPresent()) {
             throw new IncorrectUsernameException();
         }
-        ++id;
         User user = new User();
-        user.setId(id);
         user.setEmail(registerReq.getUsername());
         user.setPassword(passwordEncoder.encode(registerReq.getPassword()));
         user.setRole(Role.USER);
         user.setFirstName(registerReq.getFirstName());
         user.setLastName(registerReq.getLastName());
         user.setPhone(registerReq.getPhone());
-        System.out.println("Метод: createUser. Перед сохранением в БД");
-        System.out.println(user);
+        log.info("Метод: createUser. Перед сохранением в БД");
+        log.info(String.valueOf(user));
         userRepository.save(user);
     }
-
 }

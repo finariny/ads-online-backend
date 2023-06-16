@@ -11,12 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.service.AdsService;
 
@@ -47,6 +47,7 @@ public class AdsController {
     })
     @GetMapping()
     public ResponseEntity<ResponseWrapperAdsDto> getAllAds() {
+        log.info("Запрос всех обьявлений");
         return ResponseEntity.ok(adsService.getAllAds());
     }
 
@@ -58,14 +59,13 @@ public class AdsController {
                                     implementation = ResponseWrapperAdsDto.class)))),
             @ApiResponse(responseCode = "401")
     })
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAd(@NotNull Authentication authentication,
-            @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties ,
-           @RequestPart(value = "image",required = false) @Valid  MultipartFile image
+                                        @RequestPart("properties") @Valid @NotNull @NotBlank CreateAdsDto properties,
+                                        @RequestPart(value = "image", required = false) @Valid MultipartFile image
     ) {
-        System.out.printf("Нажали добавить обьявление");
-        return ResponseEntity.ok(adsService.saveAd(properties,authentication.getName(), image));
+        log.info("Нажали добавить обьявление");
+        return ResponseEntity.ok(adsService.saveAd(properties, authentication.getName(), image));
     }
 
     @Operation(summary = "Получить информацию об объявлении")
@@ -73,11 +73,12 @@ public class AdsController {
             @ApiResponse(responseCode = "200",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(
-                                    implementation = ResponseWrapperAdsDto.class)))),
+                                    implementation = FullAdsDto.class)))),
             @ApiResponse(responseCode = "401")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<AdsDto> getAds(@PathVariable int id) {
+    public ResponseEntity<FullAdsDto> getAds(@PathVariable int id) {
+        log.info("Нажали на обьявление ");
         return ResponseEntity.ok(adsService.getAd(id));
     }
 
@@ -88,15 +89,11 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> removeAd(@NotNull Authentication authentication, @PathVariable int id) {
-        if (id <= 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<Void> removeAd(Authentication authentication, @PathVariable int id) {
         if (adsService.removeAd(authentication.getName(), id)) {
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PatchMapping("/{id}")
@@ -109,15 +106,12 @@ public class AdsController {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "403")
     })
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<AdsDto> updateAds(@NotNull Authentication authentication, @PathVariable int id, @RequestBody CreateAdsDto createAdsDto) {
-        if (id <= 0) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        AdsDto adsDto = adsService.updateAds(id, createAdsDto, authentication.getName());
+        if (adsDto != null) {
+            return ResponseEntity.ok(adsDto);
         }
-        if (adsService.updateAds(id, createAdsDto) != null) {
-            return ResponseEntity.ok(adsService.updateAds(id, createAdsDto));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(summary = "Получить объявления авторизованного пользователя")
@@ -126,14 +120,13 @@ public class AdsController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(
                                     implementation = ResponseWrapperAdsDto.class)))),
-            @ApiResponse(responseCode = "401",
-                    description = "Unauthorized")
+            @ApiResponse(responseCode = "401")
     })
     @GetMapping("/me")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(@NotNull Authentication authentication) {
         log.info("метод получения всех объявлений авторизованного пользователя");
         ResponseWrapperAdsDto ads = adsService.getAdsMe(authentication);
+        log.info(String.valueOf(ads));
         if (ads != null) {
             return ResponseEntity.ok(ads);
         } else {
@@ -147,14 +140,13 @@ public class AdsController {
                     content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
                             array = @ArraySchema(schema = @Schema(
                                     implementation = String.class)))),
-            @ApiResponse(responseCode = "401",
-                    description = "Unauthorized"),
-            @ApiResponse(responseCode = "403",
-                    description = "Forbidden")
+            @ApiResponse(responseCode = "401"),
+            @ApiResponse(responseCode = "403")
     })
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+
     @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateImage(@NotNull Authentication authentication, @PathVariable("id") int id,
+    public ResponseEntity<?> updateImage(Authentication authentication,
+                                         @PathVariable("id") int id,
                                          @RequestPart(value = "image") @Valid MultipartFile image
     ) {
         if (adsService.updateImage(id, image)) {

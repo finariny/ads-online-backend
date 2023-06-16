@@ -1,11 +1,9 @@
 package ru.skypro.ads.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
 
@@ -49,6 +47,7 @@ public interface AdsMapper {
      * @param ads          объект {@link Ads}
      */
     void updateAdsFromCreateAdsDto(CreateAdsDto createAdsDto, @MappingTarget Ads ads);
+    //Вопрос по этому методу? Он не возвращает.
 
     /**
      * Сопоставляет список объектов {@link Ads} и их количество в объект {@link ResponseWrapperAdsDto}
@@ -58,4 +57,18 @@ public interface AdsMapper {
      * @return объект {@link ResponseWrapperAdsDto}
      */
     ResponseWrapperAdsDto listAdsToAdsDto(int count, List<Ads> results);
+
+    /**
+     * Преобразует ads в обьект с полной информацией об объявлении и авторе
+     * @param ads сущность объявления
+     * @return FullAdsDto
+     */
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "authorFirstName", source = "user.firstName")
+    @Mapping(target = "authorLastName", source = "user.lastName")
+    @Mapping(target = "phone", source = "user.phone")
+    @Mapping(target = "email", source = "user.email")
+    @Mapping(target = "image", source = "image")
+    @Mapping(target = "pk", source = "id")
+    FullAdsDto toFullAdsDto(Ads ads);
 }

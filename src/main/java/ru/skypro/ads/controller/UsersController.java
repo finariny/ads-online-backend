@@ -51,10 +51,9 @@ public class UsersController {
 
     @GetMapping("/me")
     @Operation(summary = "Получить информацию об авторизованном пользователе")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
     public ResponseEntity<UserDto> getUser(@NotNull Authentication authentication) {
-        System.out.println("Запрос информации о пользователе");
+        log.info("Запрос информации о пользователе");
         return ResponseEntity.ok(currentUserService.getUser(authentication));
     }
 
@@ -62,7 +61,7 @@ public class UsersController {
     @Operation(summary = "Обновить информацию об авторизованном пользователе")
     @ApiResponses(value = {@ApiResponse(responseCode = "200"), @ApiResponse(responseCode = "401")})
     public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto, Authentication authentication) {
-        System.out.println("Нажали контроллер: Обновить информацию об авторизованном пользователе");
+        log.info("Нажали контроллер: Обновить информацию об авторизованном пользователе");
         return ResponseEntity.ok(currentUserService.updateUser(userDto, authentication));
     }
 

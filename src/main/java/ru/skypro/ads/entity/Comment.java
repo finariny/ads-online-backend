@@ -40,6 +40,11 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    /**
+     * для мягкого удаления
+     */
+//    private boolean deleted;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,13 +1,14 @@
 package ru.skypro.ads.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.AdsDto;
 import ru.skypro.ads.dto.CreateAdsDto;
+import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
-import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -15,20 +16,25 @@ import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
+import ru.skypro.ads.service.PermissionService;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AdsServiceImpl implements AdsService {
 
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
     private final AdsMapper adsMapper;
+    private final PermissionService permissionService;
 
-    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper) {
+
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper, PermissionService permissionService) {
         this.adsRepository = adsRepository;
         this.userRepository = userRepository;
         this.adsMapper = adsMapper;
+        this.permissionService = permissionService;
     }
 
     /**
@@ -39,6 +45,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public ResponseWrapperAdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
+        log.info(adsList.toString());
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
@@ -46,6 +53,7 @@ public class AdsServiceImpl implements AdsService {
      * Добавляет объявление
      *
      * @param ads   объект {@link AdsDto}
+     * @param email e-mail пользователя
      * @param image объект {@link MultipartFile}
      * @return объект {@link AdsDto}
      */
@@ -65,22 +73,24 @@ public class AdsServiceImpl implements AdsService {
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto getAd(Integer id) {
+    public FullAdsDto getAd(Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        return adsMapper.adsToAdsDto(ads);
+        log.info(String.valueOf(ads));
+        return adsMapper.toFullAdsDto(ads);
     }
 
     /**
      * Удаляет объявление
      *
-     * @param id идентификатор объявления
+     * @param email e-mail пользователя
+     * @param id    идентификатор объявления
      * @return <code>true</code> если объявление удалено, <code>false</code> в случае неудачи
      */
     @Override
     public boolean removeAd(String email, int id) {
-        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        if (user.getRole().equals(Role.ADMIN) || user.equals(ads.getUser())) {
+        User adOwner = ads.getUser();
+        if (permissionService.isThisUserOrAdmin(email, adOwner)) {
             adsRepository.deleteById(id);
             return true;
         }
@@ -92,15 +102,20 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id           идентификатор объявления
      * @param createAdsDto новая информация об объявлении
+     * @param email        e-mail пользователя
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto updateAds(int id, CreateAdsDto createAdsDto) {
+    public AdsDto updateAds(int id, CreateAdsDto createAdsDto, String email) {
         if (adsRepository.findById(id).isPresent()) {
             Ads ads = adsRepository.findById(id).get();
-            adsMapper.updateAdsFromCreateAdsDto(createAdsDto, ads);
-            adsRepository.save(ads);
-            return adsMapper.adsToAdsDto(ads);
+            User adOwner = ads.getUser();
+            if (permissionService.isThisUserOrAdmin(email, adOwner)) {
+                log.info("запустился метод updateAds.");
+                adsMapper.updateAdsFromCreateAdsDto(createAdsDto, ads);
+                adsRepository.save(ads);
+                return adsMapper.adsToAdsDto(ads);
+            }
         }
         return null;
     }
@@ -130,5 +145,4 @@ public class AdsServiceImpl implements AdsService {
     public boolean updateImage(int id, MultipartFile image) {
         return true;
     }
-
 }

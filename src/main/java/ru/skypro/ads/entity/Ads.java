@@ -49,6 +49,11 @@ public class Ads {
     @OneToMany(mappedBy = "ads")
     private List<Comment> adsCommentList;
 
+    /**
+     * для мягкого удаления
+     */
+//    private boolean deleted;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

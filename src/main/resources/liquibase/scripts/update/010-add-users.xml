@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1" author="ads">
+        <insert catalogName="ADS" schemaName="PUBLIC" tableName="USER_">
+            <column name="EMAIL" value="user@gmail.com"/>
+            <column name="FIRST_NAME" value="User"/>
+            <column name="LAST_NAME" value="User"/>
+            <column name="PHONE" value="+78008222222"/>
+            <column name="PASSWORD" value="$2a$10$Xx9I1EpuSQPjZFyf7gsrgOGPev5Rx7DXGS95rMECg/k0uHXGSwdXu"/>
+            <column name="ROLE" value="USER"/>
+        </insert>
+        <insert catalogName="ADS" schemaName="PUBLIC" tableName="USER_">
+            <column name="EMAIL" value="admin@admin.net"/>
+            <column name="FIRST_NAME" value="Admin"/>
+            <column name="LAST_NAME" value="Admin"/>
+            <column name="PHONE" value="+78008333333"/>
+            <column name="PASSWORD" value="$2a$10$Xx9I1EpuSQPjZFyf7gsrgOGPev5Rx7DXGS95rMECg/k0uHXGSwdXu"/>
+            <column name="ROLE" value="ADMIN"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

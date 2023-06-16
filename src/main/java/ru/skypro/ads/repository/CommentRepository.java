@@ -17,4 +17,5 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     //вроде в задании говорили что надо использовать сортировку...
     List<Comment> findAllByAdsIdOrderByIdDesc(Integer adsId);
+    List<Comment> findAllByAdsId(int id);
 }

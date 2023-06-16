@@ -16,8 +16,8 @@ import java.util.Objects;
 @Table(name = "USER_")
 public class User {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
     private Integer id;
 
     @Email
@@ -39,9 +39,6 @@ public class User {
     @Column(name = "ROLE")
     @Enumerated(EnumType.STRING)
     private Role role;
-
-//    @OneToOne(cascade = CascadeType.ALL)
-//    private ImageForExample avatar;
 
     @Override
     public boolean equals(Object o) {
