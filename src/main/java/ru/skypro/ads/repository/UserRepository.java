@@ -14,7 +14,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select * from user_ order by id", nativeQuery = true)
     List<User> findAllUsers();
 
-    Optional<User> getUserByEmailIgnoreCase(String username);
-
     Optional<User> findUserByEmail(String email);
+    Optional<User> getUserByEmailIgnoreCase(String username);
 }

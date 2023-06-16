@@ -68,5 +68,5 @@ public interface AdsService {
      * @param image новая картинка
      * @return добавленная картинка
      */
-    boolean updateImage(int id, MultipartFile image);
+    boolean updateImage(int id, MultipartFile image, String email);
 }
