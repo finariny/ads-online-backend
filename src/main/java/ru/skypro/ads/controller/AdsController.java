@@ -130,7 +130,7 @@ public class AdsController {
         if (ads != null) {
             return ResponseEntity.ok(ads);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -145,11 +145,11 @@ public class AdsController {
     })
 
     @PatchMapping(value = "/{id}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> updateImage(Authentication authentication,
+    public ResponseEntity<?> updateImage(@NotNull Authentication authentication,
                                          @PathVariable("id") int id,
                                          @RequestPart(value = "image") @Valid MultipartFile image
     ) {
-        if (adsService.updateImage(id, image)) {
+        if (adsService.updateImage(id, image, authentication.getName())) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -49,11 +49,13 @@ public class Ads {
     @OneToMany(mappedBy = "ads")
     private List<Comment> adsCommentList;
 
+    @OneToOne(mappedBy = "ads", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private AdsImage adsImage;
+
     /**
      * для мягкого удаления
      */
 //    private boolean deleted;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
