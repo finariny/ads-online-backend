@@ -72,4 +72,28 @@
                                  referencedColumnNames="ID" referencedTableName="USER_"/>
     </changeSet>
 
+    <changeSet id="7" author="ads">
+        <createTable tableName="ads_image">
+            <column name="ID" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ADS_IMAGE"/>
+            </column>
+            <column name="file_path" type="VARCHAR(255)"/>
+            <column name="file_extension" type="VARCHAR(255)"/>
+            <column name="file_size" type="BIGINT"/>
+            <column name="media_type" type="VARCHAR(255)"/>
+            <column name="ADS_ID" type="INT"/>
+        </createTable>
+
+
+    </changeSet>
+
+    <changeSet id="8" author="ads">
+        <createIndex indexName="IDX_IMAGE_ADS" tableName="ads_image">
+            <column name="ADS_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="ADS_ID" baseTableName="ads_image" constraintName="fk_ads_image_ads"
+                                 referencedColumnNames="ID" referencedTableName="ADS"/>
+    </changeSet>
+
 </databaseChangeLog>

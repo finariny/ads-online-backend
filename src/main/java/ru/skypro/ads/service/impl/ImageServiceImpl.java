@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
+import java.util.UUID;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -54,12 +56,13 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void updateAdsImageDetails(Ads ads, MultipartFile image, Path filePath) {
         AdsImage imageDetails = adsImageRepository.findByAds(ads).orElse(new AdsImage());
+        imageDetails.setId(UUID.randomUUID().toString());
         imageDetails.setFilePath(filePath.toString());
-        imageDetails.setFileExtension(getExtension(image.getOriginalFilename()));
+        imageDetails.setFileExtension(getExtension(Objects.requireNonNull(image.getOriginalFilename())));
         imageDetails.setFileSize(image.getSize());
         imageDetails.setMediaType(image.getContentType());
         imageDetails.setAds(ads);
-        adsImageRepository.save(imageDetails);
+        adsImageRepository.saveAndFlush(imageDetails);
     }
 
     /**
