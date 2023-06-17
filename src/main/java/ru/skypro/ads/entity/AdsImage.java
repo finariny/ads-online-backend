@@ -3,6 +3,7 @@ package ru.skypro.ads.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.skypro.ads.service.ImageInterface;
 
 import javax.persistence.*;
 
@@ -13,10 +14,9 @@ import javax.persistence.*;
 @Table(name = "ads_image")
 public class AdsImage implements ImageInterface {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-//    private int id;
-    private String id;
+    private int id;
     @Column(name = "file_path", nullable = false)
     private String filePath;
     @Column(name = "file_extension", nullable = false)

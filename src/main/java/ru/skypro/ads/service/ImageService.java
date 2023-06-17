@@ -2,7 +2,6 @@ package ru.skypro.ads.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.entity.Ads;
-import ru.skypro.ads.entity.ImageInterface;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

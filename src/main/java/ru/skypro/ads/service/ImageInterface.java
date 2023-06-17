@@ -1,4 +1,4 @@
-package ru.skypro.ads.entity;
+package ru.skypro.ads.service;
 
 public interface ImageInterface {
     String getMediaType();
