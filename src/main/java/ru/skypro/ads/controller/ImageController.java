@@ -12,7 +12,6 @@ import ru.skypro.ads.entity.AdsImage;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.repository.AdsImageRepository;
 import ru.skypro.ads.repository.AdsRepository;
-import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.ImageService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,10 +38,10 @@ public class ImageController {
         this.adsRepository = adsRepository;
     }
 
-
     /**
      * Получить рекламное изображение с диска по его идентификатору.
-     * @param adsId идентификатор объявления
+     *
+     * @param adsId    идентификатор объявления
      * @param response ответное изображение объявления, отправленное во внешний интерфейс
      * @throws IOException выдает исключение {@link IOException}
      */

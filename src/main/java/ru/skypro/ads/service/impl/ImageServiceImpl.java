@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.entity.Ads;
 import ru.skypro.ads.entity.AdsImage;
-import ru.skypro.ads.entity.ImageInterface;
+import ru.skypro.ads.service.ImageInterface;
 import ru.skypro.ads.repository.AdsImageRepository;
 import ru.skypro.ads.service.ImageService;
 
@@ -13,7 +13,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.UUID;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -32,13 +31,12 @@ public class ImageServiceImpl implements ImageService {
      * @param response     ответ сервера
      * @param filePath     путь к файлу изображения объявления на диске (откуда оно должно быть получено)
      * @param imageDetails image детали
-     * @throws IOException
      */
     @Override
     public void getImageFromDisk(HttpServletResponse response, Path filePath, ImageInterface imageDetails)
             throws IOException {
         try (InputStream is = Files.newInputStream(filePath);
-             OutputStream os = response.getOutputStream();) {
+             OutputStream os = response.getOutputStream()) {
             response.setStatus(200);
             response.setContentType(imageDetails.getMediaType());
             response.setContentLength((int) imageDetails.getFileSize());
@@ -56,7 +54,6 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void updateAdsImageDetails(Ads ads, MultipartFile image, Path filePath) {
         AdsImage imageDetails = adsImageRepository.findByAds(ads).orElse(new AdsImage());
-        imageDetails.setId(UUID.randomUUID().toString());
         imageDetails.setFilePath(filePath.toString());
         imageDetails.setFileExtension(getExtension(Objects.requireNonNull(image.getOriginalFilename())));
         imageDetails.setFileSize(image.getSize());
@@ -81,7 +78,6 @@ public class ImageServiceImpl implements ImageService {
      *
      * @param image    изображение объявления
      * @param filePath путь к файлу изображения объявления на диске (где оно должно быть сохранено)
-     * @throws IOException
      */
     @Override
     public void saveFileOnDisk(MultipartFile image, Path filePath) throws IOException {
@@ -91,7 +87,7 @@ public class ImageServiceImpl implements ImageService {
         try (InputStream is = image.getInputStream();
              OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
              BufferedInputStream bis = new BufferedInputStream(is, 1024);
-             BufferedOutputStream bos = new BufferedOutputStream(os, 1024);) {
+             BufferedOutputStream bos = new BufferedOutputStream(os, 1024)) {
             bis.transferTo(bos);
         }
     }

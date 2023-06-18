@@ -72,8 +72,7 @@ public class AdsServiceImpl implements AdsService {
     public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile image) {
         Ads saveAds = adsMapper.adsDtoToAds(ads);
         saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
-//        saveAds.setImage(image.getName()); // Todo продумать работу с image
-
+        log.info("запустился метод saveAd.");
         saveAds = adsRepository.save(saveAds);
 
         Path filePath = getFilePath(saveAds, image);
@@ -115,6 +114,7 @@ public class AdsServiceImpl implements AdsService {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         User adOwner = ads.getUser();
         if (permissionService.isThisUserOrAdmin(email, adOwner)) {
+            log.info("запустился метод removeAd.");
             try {
                 Files.deleteIfExists(Path.of(ads.getAdsImage().getFilePath()));
             } catch (IOException e) {

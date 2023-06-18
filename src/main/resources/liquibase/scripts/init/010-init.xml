@@ -74,7 +74,7 @@
 
     <changeSet id="7" author="ads">
         <createTable tableName="ads_image">
-            <column name="ID" type="VARCHAR(255)">
+            <column autoIncrement="true" name="ID" startWith="1" type="INT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ADS_IMAGE"/>
             </column>
             <column name="file_path" type="VARCHAR(255)"/>
