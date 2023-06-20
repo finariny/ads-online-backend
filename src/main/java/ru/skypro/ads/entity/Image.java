@@ -29,9 +29,6 @@ public class Image {
     @Column(name = "MEDIA_TYPE", nullable = false)
     private String mediaType;
 
-    @OneToOne(mappedBy = "image")
-    private Ads ads;
-
     public Path getPath() {
         return Path.of(this.filePath);
     }

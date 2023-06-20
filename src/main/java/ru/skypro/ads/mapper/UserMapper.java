@@ -1,24 +1,20 @@
 package ru.skypro.ads.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 import ru.skypro.ads.dto.UserDto;
 import ru.skypro.ads.entity.User;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface UserMapper {
-    String USER_AVATAR = "/users/avatar/";
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    /**
+     * Сопоставляет объект {@link User} в объект {@link UserDto}
+     *
+     * @param user объект {@link User}
+     * @return объект {@link UserDto}
+     */
+    @Mapping(target = "image", expression = "java(user.getImage() != null ? user.getImage().getUrl() : \"\")")
     UserDto userToUserDto(User user);
-
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    User userDtoPartialUpdateUser(UserDto userDto, @MappingTarget User user); // для обновления юзера
-
-//   List<UserDto> userEntitiesToUserDto(List<User> usersList); может еще это понадобится?
-
-    User userDtoToUser(UserDto userDto);
 }

@@ -40,6 +40,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToOne
+    @JoinColumn(name = "IMAGE_ID")
+    private Image image;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
