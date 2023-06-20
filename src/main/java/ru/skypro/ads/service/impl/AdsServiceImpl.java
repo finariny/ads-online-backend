@@ -1,7 +1,6 @@
 package ru.skypro.ads.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +9,7 @@ import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.Image;
 import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
@@ -36,9 +36,6 @@ public class AdsServiceImpl implements AdsService {
     private final PermissionService permissionService;
     private final ImageService imageService;
 
-    @Value("${ads.image.dir.path}")
-    private String adsImageDir;
-
 
     public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper, PermissionService permissionService, ImageService imageService) {
         this.adsRepository = adsRepository;
@@ -63,29 +60,24 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Добавляет объявление
      *
-     * @param ads   объект {@link AdsDto}
-     * @param email e-mail пользователя
-     * @param image объект {@link MultipartFile}
+     * @param ads       объект {@link AdsDto}
+     * @param email     e-mail пользователя
+     * @param imageFile объект {@link MultipartFile}
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile image) {
+    public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile imageFile) {
+        log.info("запустился метод saveAd.");
         Ads saveAds = adsMapper.adsDtoToAds(ads);
         saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
-        log.info("запустился метод saveAd.");
-        saveAds = adsRepository.save(saveAds);
-
-        Path filePath = getFilePath(saveAds, image);
+        Image image;
         try {
-            imageService.saveFileOnDisk(image, filePath);
+            image = imageService.saveImageFile(imageFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        imageService.updateAdsImageDetails(saveAds, image, filePath);
-
-        saveAds.setImage("/" + adsImageDir + "/" + saveAds.getId());
-        adsRepository.save(saveAds);
-
+        saveAds.setImage(image);
+        adsRepository.saveAndFlush(saveAds);
         return adsMapper.adsToAdsDto(saveAds);
     }
 
@@ -116,7 +108,7 @@ public class AdsServiceImpl implements AdsService {
         if (permissionService.isThisUserOrAdmin(email, adOwner)) {
             log.info("запустился метод removeAd.");
             try {
-                Files.deleteIfExists(Path.of(ads.getAdsImage().getFilePath()));
+                Files.deleteIfExists(Path.of(ads.getImage().getFilePath()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -173,36 +165,26 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Обновляет картинку объявления
      *
-     * @param id    идентификатор объявления
-     * @param image новая картинка
+     * @param id        идентификатор объявления
+     * @param imageFile новая картинка
      * @return <code>true</code> если картинка обновлена, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean updateImage(int id, MultipartFile image, String email) {
+    public boolean updateImage(int id, MultipartFile imageFile, String email) {
+        log.info("запустился метод updateImage.");
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         User adOwner = ads.getUser();
         if (permissionService.isThisUserOrAdmin(email, adOwner)) {
-            log.info("запустился метод updateImage.");
-
-            Path filePath = getFilePath(ads, image);
+            Image image;
             try {
-                imageService.saveFileOnDisk(image, filePath);
+                image = imageService.saveImageFile(imageFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            imageService.updateAdsImageDetails(ads, image, filePath);
-
-            ads.setImage("/" + adsImageDir + "/" + ads.getId());
+            ads.setImage(image);
             adsRepository.save(ads);
-
             return true;
         }
-
         return false;
-    }
-
-    private Path getFilePath(Ads ads, MultipartFile image) {
-        return Path.of(adsImageDir, ads.getUser().getId() + "-" + ads.getId() + "."
-                + imageService.getExtension(image.getOriginalFilename()));
     }
 }

@@ -35,27 +35,21 @@ public class Ads {
     @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "IMAGE")
-    private String image;
-
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @JoinColumn(name = "USER_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "IMAGE_ID")
+    private Image image;
 
     @OneToMany(mappedBy = "ads")
     private List<Comment> adsCommentList;
 
-    @OneToOne(mappedBy = "ads", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private AdsImage adsImage;
-
-    /**
-     * для мягкого удаления
-     */
-//    private boolean deleted;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,5 +62,4 @@ public class Ads {
     public int hashCode() {
         return Objects.hash(getId());
     }
-
 }

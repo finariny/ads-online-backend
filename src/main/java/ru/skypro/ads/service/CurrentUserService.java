@@ -37,10 +37,10 @@ public interface CurrentUserService {
     /**
      * Импортирует изображение для аватарки зарегистрированном пользователя
      *
-     * @param image          объект {@link MultipartFile}
+     * @param imageFile      объект {@link MultipartFile}
      * @param authentication {@link Authentication}
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
-    boolean updateUserImage(MultipartFile image, Authentication authentication);
+    boolean updateUserImage(MultipartFile imageFile, Authentication authentication);
 
 }
