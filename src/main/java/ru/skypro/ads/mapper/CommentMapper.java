@@ -31,7 +31,8 @@ public interface CommentMapper {
 
     @Named("localDateTimeToLong")
     default Long localDateTimeToLong(LocalDateTime dateTime) {
-        return dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+        return dateTime.toInstant(ZonedDateTime.now().getOffset())
+                .toEpochMilli();
     }
 
     @Named("longToLocalDateTime")
