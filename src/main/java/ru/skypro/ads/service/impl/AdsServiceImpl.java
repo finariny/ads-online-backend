@@ -10,7 +10,6 @@ import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
 import ru.skypro.ads.entity.Image;
-import ru.skypro.ads.entity.Role;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -152,14 +151,9 @@ public class AdsServiceImpl implements AdsService {
         User authenticatedUser = userRepository
                 .findUserByEmail(authentication.getName())
                 .orElseThrow(UserNotFoundException::new);
-        if (authenticatedUser.getRole() == (Role.ADMIN) || authenticatedUser.getRole() == (Role.USER)) {
-            log.info("Пользователь авторизован и запустился метод getAdsMe!");
-            List<Ads> adsList = adsRepository.findAllByUser(authenticatedUser);
-            return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
-        } else {
-            log.info("Пользователь не авторизован. Метод getAdsMe не запустился!");
-            return new ResponseWrapperAdsDto();
-        }
+        log.info("Пользователь авторизован и запустился метод getAdsMe!");
+        List<Ads> adsList = adsRepository.findAllByUser(authenticatedUser);
+        return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
