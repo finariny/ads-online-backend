@@ -3,6 +3,7 @@ package ru.skypro.ads.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.NewPasswordDto;
@@ -25,6 +26,8 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ImageService imageService;
+    //
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Изменение пароля зарегистрированного пользователя
@@ -40,10 +43,17 @@ public class CurrentUserServiceImpl implements CurrentUserService {
             User user = userRepository
                     .findUserByEmail(authentication.getName())
                     .orElseThrow(UserNotFoundException::new);
-            if (!newPasswordDto.getCurrentPassword().equals(user.getPassword())) {
+//            if (!newPasswordDto.getCurrentPassword().equals(user.getPassword())) {
+//                throw new RuntimeException("Не совпадают пароли");
+//            }
+//            user.setPassword(newPasswordDto.getNewPassword());
+//            log.info("newPasswordDto.getNewPassword()");
+//            userRepository.save(user);
+
+            if (!passwordEncoder.matches(newPasswordDto.getCurrentPassword(), user.getPassword())) {
                 throw new RuntimeException("Не совпадают пароли");
             }
-            user.setPassword(newPasswordDto.getNewPassword());
+            user.setPassword(passwordEncoder.encode(newPasswordDto.getNewPassword()));
             log.info("newPasswordDto.getNewPassword()");
             userRepository.save(user);
         } catch (Exception e) {
