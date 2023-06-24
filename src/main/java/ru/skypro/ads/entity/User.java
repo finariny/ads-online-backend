@@ -40,7 +40,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "IMAGE_ID")
     private Image image;
 

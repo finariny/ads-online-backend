@@ -6,7 +6,10 @@ import ru.skypro.ads.dto.CreateCommentDto;
 import ru.skypro.ads.dto.ResponseWrapperCommentDto;
 import ru.skypro.ads.entity.Comment;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
@@ -22,7 +25,8 @@ public interface CommentMapper {
     @Mapping(source = "id", target = "pk")
     @Mapping(source = "user.id", target = "author")
     @Mapping(source = "user.firstName", target = "authorFirstName")
-    @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "localDateTimeToLong")
+    @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "localDateTimeToLong")
+    @Mapping(source = "user.image.url", target = "authorImage")
     CommentDto commentToCommentDto(Comment comment);
 
 

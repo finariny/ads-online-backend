@@ -37,7 +37,7 @@ public class Comment {
     private Ads ads;
 
     @JoinColumn(name = "USER_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @Override
