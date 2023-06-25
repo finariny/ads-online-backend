@@ -13,9 +13,9 @@
             </column>
             <column name="PRICE" type="INT"/>
             <column name="TITLE" type="VARCHAR(255)"/>
-            <column name="IMAGE" type="VARCHAR(255)"/>
             <column name="DESCRIPTION" type="VARCHAR(255)"/>
             <column name="USER_ID" type="INT"/>
+            <column name="IMAGE_ID" type="INT"/>
         </createTable>
     </changeSet>
 
@@ -42,34 +42,60 @@
             <column name="PHONE" type="VARCHAR(255)"/>
             <column name="PASSWORD" type="VARCHAR(255)"/>
             <column name="ROLE" type="VARCHAR(255)"/>
+            <column name="IMAGE_ID" type="INT"/>
         </createTable>
     </changeSet>
 
     <changeSet id="4" author="ads">
+        <createTable tableName="IMAGE">
+            <column autoIncrement="true" name="ID" startWith="1" type="INT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_IMAGE"/>
+            </column>
+            <column name="FILE_PATH" type="VARCHAR(255)"/>
+            <column name="FILE_EXTENSION" type="VARCHAR(255)"/>
+            <column name="FILE_SIZE" type="BIGINT"/>
+            <column name="MEDIA_TYPE" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="ads">
         <createIndex indexName="IDX_ADS_USER" tableName="ADS">
             <column name="USER_ID"/>
         </createIndex>
-
         <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="ADS" constraintName="FK_ADS_ON_USER"
                                  referencedColumnNames="ID" referencedTableName="USER_"/>
     </changeSet>
 
-    <changeSet id="5" author="ads">
+    <changeSet id="6" author="ads">
+        <createIndex indexName="IDX_ADS_IMAGE" tableName="ADS">
+            <column name="IMAGE_ID"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="IMAGE_ID" baseTableName="ADS" constraintName="FK_ADS_ON_IMAGE"
+                                 referencedColumnNames="ID" referencedTableName="IMAGE"/>
+    </changeSet>
+
+    <changeSet id="7" author="ads">
         <createIndex indexName="IDX_COMMENT_ADS" tableName="COMMENT_">
             <column name="ADS_ID"/>
         </createIndex>
-
         <addForeignKeyConstraint baseColumnNames="ADS_ID" baseTableName="COMMENT_" constraintName="FK_COMMENT_ON_ADS"
                                  referencedColumnNames="ID" referencedTableName="ADS"/>
     </changeSet>
 
-    <changeSet id="6" author="ads">
+    <changeSet id="8" author="ads">
         <createIndex indexName="IDX_COMMENT_USER" tableName="COMMENT_">
             <column name="USER_ID"/>
         </createIndex>
-
         <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="COMMENT_" constraintName="FK_COMMENT_ON_USER"
                                  referencedColumnNames="ID" referencedTableName="USER_"/>
+    </changeSet>
+
+    <changeSet id="9" author="ads">
+        <createIndex indexName="IDX_USER_IMAGE" tableName="USER_">
+            <column name="IMAGE_ID"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="IMAGE_ID" baseTableName="USER_" constraintName="FK_USER_ON_IMAGE"
+                                 referencedColumnNames="ID" referencedTableName="IMAGE"/>
     </changeSet>
 
 </databaseChangeLog>

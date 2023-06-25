@@ -9,6 +9,7 @@ import ru.skypro.ads.dto.CreateAdsDto;
 import ru.skypro.ads.dto.FullAdsDto;
 import ru.skypro.ads.dto.ResponseWrapperAdsDto;
 import ru.skypro.ads.entity.Ads;
+import ru.skypro.ads.entity.Image;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.AdsNotFoundException;
 import ru.skypro.ads.exception.UserNotFoundException;
@@ -16,8 +17,12 @@ import ru.skypro.ads.mapper.AdsMapper;
 import ru.skypro.ads.repository.AdsRepository;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.AdsService;
+import ru.skypro.ads.service.ImageService;
 import ru.skypro.ads.service.PermissionService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
@@ -28,13 +33,15 @@ public class AdsServiceImpl implements AdsService {
     private final UserRepository userRepository;
     private final AdsMapper adsMapper;
     private final PermissionService permissionService;
+    private final ImageService imageService;
 
 
-    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper, PermissionService permissionService) {
+    public AdsServiceImpl(AdsRepository adsRepository, UserRepository userRepository, AdsMapper adsMapper, PermissionService permissionService, ImageService imageService) {
         this.adsRepository = adsRepository;
         this.userRepository = userRepository;
         this.adsMapper = adsMapper;
         this.permissionService = permissionService;
+        this.imageService = imageService;
     }
 
     /**
@@ -52,17 +59,24 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Добавляет объявление
      *
-     * @param ads   объект {@link AdsDto}
-     * @param email e-mail пользователя
-     * @param image объект {@link MultipartFile}
+     * @param ads       объект {@link AdsDto}
+     * @param email     e-mail пользователя
+     * @param imageFile объект {@link MultipartFile}
      * @return объект {@link AdsDto}
      */
     @Override
-    public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile image) {
+    public AdsDto saveAd(CreateAdsDto ads, String email, MultipartFile imageFile) {
+        log.info("запустился метод saveAd.");
         Ads saveAds = adsMapper.adsDtoToAds(ads);
         saveAds.setUser(userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new));
-        saveAds.setImage(image.getName()); // Todo продумать работу с image
-        adsRepository.save(saveAds);
+        Image image;
+        try {
+            image = imageService.saveImageFile(imageFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        saveAds.setImage(image);
+        adsRepository.saveAndFlush(saveAds);
         return adsMapper.adsToAdsDto(saveAds);
     }
 
@@ -91,6 +105,12 @@ public class AdsServiceImpl implements AdsService {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         User adOwner = ads.getUser();
         if (permissionService.isThisUserOrAdmin(email, adOwner)) {
+            log.info("запустился метод removeAd.");
+            try {
+                Files.deleteIfExists(Path.of(ads.getImage().getFilePath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             adsRepository.deleteById(id);
             return true;
         }
@@ -123,26 +143,42 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Получает данные об объявлениях пользователя
      *
-     * @param authentication данные о текущем пользователе
+     * @param authentication данные о текущем пользователе {@link Authentication}
      * @return данные об объявлениях пользователя в виде дто-объекта {@link ResponseWrapperAdsDto}
      */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Authentication authentication) {
-        String username = authentication.getName();
-        User user = userRepository.getUserByEmailIgnoreCase(username).orElseThrow(UserNotFoundException::new);
-        List<Ads> adsList = adsRepository.findAllByUser(user);
+        User authenticatedUser = userRepository
+                .findUserByEmail(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+        log.info("Пользователь авторизован и запустился метод getAdsMe!");
+        List<Ads> adsList = adsRepository.findAllByUser(authenticatedUser);
         return adsMapper.listAdsToAdsDto(adsList.size(), adsList);
     }
 
     /**
      * Обновляет картинку объявления
      *
-     * @param id    идентификатор объявления
-     * @param image новая картинка
+     * @param id        идентификатор объявления
+     * @param imageFile новая картинка
      * @return <code>true</code> если картинка обновлена, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean updateImage(int id, MultipartFile image) {
-        return true;
+    public boolean updateImage(int id, MultipartFile imageFile, String email) {
+        log.info("запустился метод updateImage.");
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        User adOwner = ads.getUser();
+        if (permissionService.isThisUserOrAdmin(email, adOwner)) {
+            Image image;
+            try {
+                image = imageService.saveImageFile(imageFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            ads.setImage(image);
+            adsRepository.save(ads);
+            return true;
+        }
+        return false;
     }
 }

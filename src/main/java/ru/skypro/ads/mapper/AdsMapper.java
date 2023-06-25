@@ -20,6 +20,7 @@ public interface AdsMapper {
      */
     @Mapping(source = "id", target = "pk")
     @Mapping(source = "user.id", target = "author")
+    @Mapping(target = "image", expression = "java(ads.getImage() != null ? ads.getImage().getUrl() : \"\")")
     AdsDto adsToAdsDto(Ads ads);
 
     /**
@@ -30,6 +31,7 @@ public interface AdsMapper {
      */
     @Mapping(source = "pk", target = "id")
     @Mapping(source = "author", target = "user.id")
+    @Mapping(target = "image", expression = "java(new ru.skypro.ads.entity.Image())")
     Ads adsDtoToAds(AdsDto adsDto);
 
     /**
@@ -60,6 +62,7 @@ public interface AdsMapper {
 
     /**
      * Преобразует ads в обьект с полной информацией об объявлении и авторе
+     *
      * @param ads сущность объявления
      * @return FullAdsDto
      */
@@ -68,7 +71,7 @@ public interface AdsMapper {
     @Mapping(target = "authorLastName", source = "user.lastName")
     @Mapping(target = "phone", source = "user.phone")
     @Mapping(target = "email", source = "user.email")
-    @Mapping(target = "image", source = "image")
+    @Mapping(target = "image", expression = "java(ads.getImage() != null ? ads.getImage().getUrl() : \"\")")
     @Mapping(target = "pk", source = "id")
     FullAdsDto toFullAdsDto(Ads ads);
 }

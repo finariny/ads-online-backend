@@ -3,15 +3,20 @@ package ru.skypro.ads.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.ads.dto.NewPasswordDto;
 import ru.skypro.ads.dto.UserDto;
+import ru.skypro.ads.entity.Image;
 import ru.skypro.ads.entity.User;
 import ru.skypro.ads.exception.UserNotFoundException;
 import ru.skypro.ads.mapper.UserMapper;
 import ru.skypro.ads.repository.UserRepository;
 import ru.skypro.ads.service.CurrentUserService;
+import ru.skypro.ads.service.ImageService;
+
+import java.io.IOException;
 
 @Log4j2
 @Service
@@ -19,8 +24,10 @@ import ru.skypro.ads.service.CurrentUserService;
 public class CurrentUserServiceImpl implements CurrentUserService {
 
     private final UserRepository userRepository;
-
     private final UserMapper userMapper;
+    private final ImageService imageService;
+    //
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Изменение пароля зарегистрированного пользователя
@@ -36,10 +43,17 @@ public class CurrentUserServiceImpl implements CurrentUserService {
             User user = userRepository
                     .findUserByEmail(authentication.getName())
                     .orElseThrow(UserNotFoundException::new);
-            if (!newPasswordDto.getCurrentPassword().equals(user.getPassword())) {
+//            if (!newPasswordDto.getCurrentPassword().equals(user.getPassword())) {
+//                throw new RuntimeException("Не совпадают пароли");
+//            }
+//            user.setPassword(newPasswordDto.getNewPassword());
+//            log.info("newPasswordDto.getNewPassword()");
+//            userRepository.save(user);
+
+            if (!passwordEncoder.matches(newPasswordDto.getCurrentPassword(), user.getPassword())) {
                 throw new RuntimeException("Не совпадают пароли");
             }
-            user.setPassword(newPasswordDto.getNewPassword());
+            user.setPassword(passwordEncoder.encode(newPasswordDto.getNewPassword()));
             log.info("newPasswordDto.getNewPassword()");
             userRepository.save(user);
         } catch (Exception e) {
@@ -93,12 +107,22 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     /**
      * Импортирует изображение для аватарки зарегистрированном пользователя
      *
-     * @param image          объект {@link MultipartFile}
+     * @param imageFile      объект {@link MultipartFile}
      * @param authentication {@link Authentication}
      * @return <code>true</code> если изображение загружено, <code>false</code> в случае неудачи
      */
     @Override
-    public boolean updateUserImage(MultipartFile image, Authentication authentication) {
-        return false;
+    public boolean updateUserImage(MultipartFile imageFile, Authentication authentication) {
+        User user = userRepository.findUserByEmail(authentication.getName())
+                .orElseThrow(UserNotFoundException::new);
+        Image image;
+        try {
+            image = imageService.saveImageFile(imageFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        user.setImage(image);
+        userRepository.saveAndFlush(user);
+        return true;
     }
 }

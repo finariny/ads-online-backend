@@ -37,13 +37,8 @@ public class Comment {
     private Ads ads;
 
     @JoinColumn(name = "USER_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
-
-    /**
-     * для мягкого удаления
-     */
-//    private boolean deleted;
 
     @Override
     public boolean equals(Object o) {
