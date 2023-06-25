@@ -30,8 +30,6 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final PermissionService permissionService;
 
-    private int idComment = 0;
-
     public CommentServiceImpl(CommentRepository commentRepository, AdsRepository adsRepository, CommentMapper commentMapper, UserRepository userRepository, PermissionService permissionService) {
         this.commentRepository = commentRepository;
         this.adsRepository = adsRepository;
@@ -56,7 +54,6 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow();
         Comment comment = new Comment();
         comment.setUser(user);
-        comment.setId(++idComment);
         comment.setCreatedAt(LocalDateTime.now());
         comment.setAds(adsRepository.findById(id).orElseThrow());
         comment.setText(text.getText());

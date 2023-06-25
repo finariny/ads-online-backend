@@ -47,7 +47,7 @@ public class Ads {
     @JoinColumn(name = "IMAGE_ID")
     private Image image;
 
-    @OneToMany(mappedBy = "ads",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ads", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> adsCommentList;
 
     @Override
