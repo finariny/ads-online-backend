@@ -43,18 +43,12 @@ public class CurrentUserServiceImpl implements CurrentUserService {
             User user = userRepository
                     .findUserByEmail(authentication.getName())
                     .orElseThrow(UserNotFoundException::new);
-//            if (!newPasswordDto.getCurrentPassword().equals(user.getPassword())) {
-//                throw new RuntimeException("Не совпадают пароли");
-//            }
-//            user.setPassword(newPasswordDto.getNewPassword());
-//            log.info("newPasswordDto.getNewPassword()");
-//            userRepository.save(user);
 
             if (!passwordEncoder.matches(newPasswordDto.getCurrentPassword(), user.getPassword())) {
                 throw new RuntimeException("Не совпадают пароли");
             }
             user.setPassword(passwordEncoder.encode(newPasswordDto.getNewPassword()));
-            log.info("newPasswordDto.getNewPassword()");
+            log.info("Установка нового пароля с шифровкой");
             userRepository.save(user);
         } catch (Exception e) {
             log.warn("Не удалось изменить пароль: " + e.getMessage());
