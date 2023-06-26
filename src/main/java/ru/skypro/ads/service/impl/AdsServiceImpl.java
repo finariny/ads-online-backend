@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -127,8 +128,9 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public AdsDto updateAds(int id, CreateAdsDto createAdsDto, String email) {
-        if (adsRepository.findById(id).isPresent()) {
-            Ads ads = adsRepository.findById(id).get();
+        Optional<Ads> optionalAds = adsRepository.findById(id);
+        if (optionalAds.isPresent()) {
+            Ads ads = optionalAds.get();
             User adOwner = ads.getUser();
             if (permissionService.isThisUserOrAdmin(email, adOwner)) {
                 log.info("запустился метод updateAds.");

@@ -1,6 +1,9 @@
 
 # Дипломная работа Skypro "Бэкенд-часть сайта объявлений на Java"
 
+![frontend-screenshot-1](https://github.com/finariny/ads-online-backend/raw/master/src/main/resources/screenshots/frontend-screenshot-1.jpg)  
+
+![frontend-screenshot-2](https://github.com/finariny/ads-online-backend/raw/master/src/main/resources/screenshots/frontend-screenshot-2.jpg)
 
 ---
 ### Разработчики
