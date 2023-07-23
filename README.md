@@ -55,7 +55,7 @@
   - React
   - Node.js
 
-### Разработчики
+## Разработчики
 - Кирилл Вохминов ([KaerLaende](https://github.com/KaerLaende))
 - Айкануш Арутюнян ([rafaelovna](https://github.com/rafaelovna))
 - Павел Турлачев ([turchev](https://github.com/turchev))
